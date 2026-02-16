@@ -3,14 +3,15 @@ import { Elysia } from 'elysia';
 import { z } from 'zod';
 import { betterAuthPlugin, OpenAPI } from './http/plugins/better-auth';
 import cors from '@elysiajs/cors';
+import { env } from './env';
 
 
 const app = new Elysia()
 	.use(cors({
-		origin: 'http://localhost:3000',
+		origin: env.FRONTEND_URL,
 		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-		allowedHeaders: ['Content-Type', 'Authorization'],
 		credentials: true,
+		allowedHeaders: ['Content-Type', 'Authorization'],
 	 }))
 	.use(
 		openapi({
@@ -21,7 +22,6 @@ const app = new Elysia()
     })
 	)
 	.use(betterAuthPlugin)
-	.get('/', () => 'Hello Elysia')
 	.get(
 		'/users/:id',
 		({ params, user }) => {
