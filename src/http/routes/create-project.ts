@@ -4,21 +4,30 @@ import { db } from "../../database/client";
 import { project } from "../../database/schema";
 import { betterAuthPlugin } from "../plugins/better-auth";
 
-const createProjectSchema = z.object({
+const body = z.object({
     name: z.string().min(1),
+});
+
+const createProjectResponseSchema = z.object({
+    id: z.string(),
+    name: z.string(),
 });
 
 export const createProject = new Elysia()
   .use(betterAuthPlugin)
   .post("/projects", async ({ body, set, user }) => {
-    await db.insert(project).values({ 
+    const [created] = await db.insert(project).values({
       name: body.name,
-      userId: user.id 
-    });
+      userId: user.id
+    }).returning({ id: project.id, name: project.name });
     set.status = 201;
+    return created;
 }, {
   auth: true,
-  body: createProjectSchema,
+  body,
+  response: {
+    201: createProjectResponseSchema,
+  },
   detail: {
     description: "Create a new project",
     tags: ["Project"],
