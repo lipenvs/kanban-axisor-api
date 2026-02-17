@@ -1,10 +1,11 @@
 import { openapi } from '@elysiajs/openapi';
 import { Elysia } from 'elysia';
-import { z } from 'zod';
 import { betterAuthPlugin, OpenAPI } from './http/plugins/better-auth';
 import cors from '@elysiajs/cors';
+import { createProject } from './http/routes/create-project';
+import { getProjects } from './http/routes/get-projects';
 import { env } from './env';
-
+import { toJSONSchema } from 'zod';
 
 const app = new Elysia()
 	.use(cors({
@@ -18,36 +19,18 @@ const app = new Elysia()
         documentation: {
             components: await OpenAPI.components,
             paths: await OpenAPI.getPaths()
-        }
+        },
+				mapJsonSchema: {
+					zod: (schema) => {
+						const { $schema, ...rest } = toJSONSchema(schema) as Record<string, unknown>;
+						return rest;
+					}
+				}
     })
 	)
 	.use(betterAuthPlugin)
-	.get(
-		'/users/:id',
-		({ params, user }) => {
-			const { id } = params;
-			return {
-				id,
-				name: user.name,
-			};
-		},
-		{
-			auth: true,
-			detail: {
-				summary: 'Get user by id',
-				description: 'Get user by id',
-			},
-			params: z.object({
-				id: z.string(),
-			}),
-			response: {
-				200: z.object({
-					id: z.string(),
-					name: z.string(),
-				}),
-			},
-		},
-	)
+	.use(createProject)
+	.use(getProjects)
 	.listen(3333);
 
 console.log(

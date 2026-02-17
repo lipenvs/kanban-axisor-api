@@ -15,6 +15,13 @@
       "when": 1771128426083,
       "tag": "0001_far_mephistopheles",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1771282778454,
+      "tag": "0002_cooing_wolfsbane",
+      "breakpoints": true
     }
   ]
 }

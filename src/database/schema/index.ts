@@ -1,11 +1,5 @@
-import { account } from "./account";
-import { session } from "./session";
-import { user } from "./user";
-import { verification } from "./verification";
-
-export const schema = {
-  user,
-  account,
-  session,
-  verification,
-};
+export * from "./account";
+export * from "./project";
+export * from "./session";
+export * from "./user";
+export * from "./verification";

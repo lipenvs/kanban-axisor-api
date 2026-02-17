@@ -2,8 +2,6 @@ import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { openAPI } from 'better-auth/plugins';
 import { db } from './database/client';
-import { ConfirmAccountEmail } from './mail/templates/confirm-account';
-import { resend } from './mail/client';
 import { env } from './env';
 
 export const auth = betterAuth({
@@ -21,7 +19,7 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: true,
+    requireEmailVerification: false,
     autoSignIn: true,
     password: {
       hash: (password) => Bun.password.hash(password),
@@ -32,15 +30,15 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url}) => {
-      void resend.emails.send({
-        from: 'Kanban Axisor <axisor@universorust.com.br>',
-        to: user.email,
-        subject: 'Confirme sua conta no Kanban Axisor',
-        react: ConfirmAccountEmail({
-          username: user.name,
-          confirmationLink: url,
-        }),
-      });
+      // void resend.emails.send({
+      //   from: 'Kanban Axisor <axisor@universorust.com.br>',
+      //   to: user.email,
+      //   subject: 'Confirme sua conta no Kanban Axisor',
+      //   react: ConfirmAccountEmail({
+      //     username: user.name,
+      //     confirmationLink: url,
+      //   }),
+      // });
     },
   },
   session: {
