@@ -5,7 +5,7 @@ import cors from '@elysiajs/cors';
 import { createProject } from './http/routes/create-project';
 import { getProjects } from './http/routes/get-projects';
 import { env } from './env';
-import { toJSONSchema } from 'zod';
+import { toJSONSchema, type ZodType } from 'zod';
 
 const app = new Elysia()
 	.use(cors({
@@ -21,7 +21,7 @@ const app = new Elysia()
             paths: await OpenAPI.getPaths()
         },
 				mapJsonSchema: {
-					zod: (schema) => {
+					zod: (schema: ZodType) => {
 						const { $schema, ...rest } = toJSONSchema(schema) as Record<string, unknown>;
 						return rest;
 					}
