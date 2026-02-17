@@ -6,6 +6,8 @@ import { createProject } from './http/routes/create-project';
 import { getProjects } from './http/routes/get-projects';
 import { env } from './env';
 import { toJSONSchema, type ZodType } from 'zod';
+import { deleteProject } from './http/routes/delete-project';
+import { updateProject } from './http/routes/update-project';
 
 const app = new Elysia()
 	.use(cors({
@@ -31,6 +33,8 @@ const app = new Elysia()
 	.use(betterAuthPlugin)
 	.use(createProject)
 	.use(getProjects)
+	.use(deleteProject)
+	.use(updateProject)
 	.listen(3333);
 
 console.log(
