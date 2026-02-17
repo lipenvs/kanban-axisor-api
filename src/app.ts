@@ -9,6 +9,7 @@ import { updateProject } from './http/routes/update-project';
 import { env } from './env';
 import { toJSONSchema, type ZodType } from 'zod';
 import { createLabel } from './http/routes/create-label';
+import { getLabels } from './http/routes/get-labels';
 
 export const app = new Elysia()
   .use(
@@ -38,4 +39,5 @@ export const app = new Elysia()
   .use(getProjects)
   .use(deleteProject)
   .use(updateProject)
-  .use(createLabel);
+  .use(createLabel)
+  .use(getLabels);
