@@ -1,0 +1,33 @@
+import { describe, expect, it } from "vitest";
+import { makeUser } from "../../tests/factories/make-user";
+import { app } from "../../app";
+import { makeProject } from "../../tests/factories/make-project";
+import { randomUUIDv7 } from "bun";
+
+describe('Get Projects', () => {
+  it('should get projects', async () => {
+    const { cookie, userId } = await makeUser()
+
+    const projectName = randomUUIDv7();
+    await makeProject(userId, projectName);
+
+    const response = await app.handle(
+      new Request(`http://localhost/projects?search=${projectName}`, {
+        method: 'GET',
+        headers: { Cookie: cookie },
+      })
+    )
+
+    const body = await response.json();
+
+    expect(response.status).toBe(200)
+    expect(body).toEqual({
+      projects: [
+        {
+          id: expect.any(String),
+          name: projectName,
+        }
+      ]
+    })
+  })
+})
