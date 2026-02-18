@@ -1,28 +1,37 @@
-import { Worker } from "bullmq";
-import { eq } from "drizzle-orm";
+import { Worker, Job } from "bullmq";
 import { db } from "../database/client";
 import { attachment } from "../database/schema/attachment";
+import { eq } from "drizzle-orm";
 import { env } from "../env";
+import { s3 } from "../utils/s3";
+import { AttachmentScanJob } from "./index";
+import { attachmentScan } from "../utils/attachmentScan";
 
-const worker = new Worker(
+const worker = new Worker<AttachmentScanJob>(
   "attachment-scan",
-  async (job) => {
-    const { attachmentId } = job.data as { attachmentId: string };
+  async (job: Job<AttachmentScanJob>) => {
+    const { attachmentId } = job.data;
 
-    // Update status to "scanning"
-    await db
-      .update(attachment)
-      .set({ status: "scanning" })
-      .where(eq(attachment.id, attachmentId));
+    const [record] = await db.select().from(attachment).where(eq(attachment.id, attachmentId));
+    if (!record) return;
 
-    // Simulate virus scan with 5s delay
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await db.update(attachment).set({ status: "scanning" }).where(eq(attachment.id, attachmentId));
 
-    // Mark as clean
-    await db
-      .update(attachment)
-      .set({ status: "clean" })
-      .where(eq(attachment.id, attachmentId));
+    const status = await attachmentScan(record.fileName);
+
+    if (status === "infected") {
+      try {
+        await s3.delete(record.storageKey);
+      } catch (err) {
+        console.error("Failed to delete infected file:", err);
+      }
+    }
+
+    await db.update(attachment).set({ status }).where(eq(attachment.id, attachmentId));
+
+    if (status === "error") {
+      throw new Error("Simulated scan failure");
+    }
   },
   {
     connection: { url: env.REDIS_URL },
@@ -30,8 +39,13 @@ const worker = new Worker(
   }
 );
 
-worker.on("failed", (job, err) => {
+worker.on("failed", async (job, err) => {
+  if (job?.data?.attachmentId) {
+    await db.update(attachment).set({ status: "error" }).where(eq(attachment.id, job.data.attachmentId));
+  }
   console.error(`Attachment scan job ${job?.id} failed:`, err.message);
 });
+
+worker.on("error", (err) => console.error("Worker connection error:", err));
 
 export { worker as attachmentWorker };

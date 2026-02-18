@@ -1,6 +1,10 @@
 import { Queue } from "bullmq";
 import { env } from "../env";
 
-export const attachmentQueue = new Queue("attachment-scan", {
+export interface AttachmentScanJob {
+  attachmentId: string;
+}
+
+export const attachmentQueue = new Queue<AttachmentScanJob>("attachment-scan", {
   connection: { url: env.REDIS_URL },
 });
