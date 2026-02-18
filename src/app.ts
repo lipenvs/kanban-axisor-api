@@ -5,6 +5,7 @@ import { authPlugin, OpenAPI } from './modules/better-auth';
 import { projectController } from './modules/project';
 import { labelController } from './modules/label';
 import { columnController } from './modules/column';
+import { taskController } from './modules/task';
 import { env } from './env';
 import { toJSONSchema, type ZodType } from 'zod';
 
@@ -25,7 +26,10 @@ export const app = new Elysia()
       },
       mapJsonSchema: {
         zod: (schema: ZodType) => {
-          const { $schema, ...rest } = toJSONSchema(schema) as Record<string, unknown>;
+          const { $schema, ...rest } = toJSONSchema(schema, {
+            target: 'openapi-3.0',
+            unrepresentable: 'any',
+          }) as Record<string, unknown>;
           return rest;
         },
       },
@@ -34,4 +38,5 @@ export const app = new Elysia()
   .use(authPlugin)
   .use(projectController)
   .use(labelController)
-  .use(columnController);
+  .use(columnController)
+  .use(taskController);
