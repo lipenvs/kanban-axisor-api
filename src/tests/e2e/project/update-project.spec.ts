@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { makeUser } from '../../tests/factories/make-user'
+import { makeUser } from '../../factories/make-user'
 import { randomUUIDv7 } from 'bun'
-import { makeProject } from '../../tests/factories/make-project'
-import { app } from '../../app'
+import { makeProject } from '../../factories/make-project'
+import { app } from '../../../app'
 import { eq } from 'drizzle-orm'
-import { db } from '../../database/client'
-import { project } from '../../database/schema'
+import { db } from '../../../database/client'
+import { project } from '../../../database/schema'
 
 describe('Update project', () => {
   it('should update a project', async () => {

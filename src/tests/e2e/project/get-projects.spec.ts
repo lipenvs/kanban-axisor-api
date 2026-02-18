@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { makeUser } from "../../tests/factories/make-user";
-import { app } from "../../app";
-import { makeProject } from "../../tests/factories/make-project";
+import { makeUser } from "../../factories/make-user";
+import { app } from "../../../app";
+import { makeProject } from "../../factories/make-project";
 import { randomUUIDv7 } from "bun";
 
 describe('Get Projects', () => {

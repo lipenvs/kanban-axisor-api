@@ -1,10 +1,10 @@
 import { describe, it, expect, afterEach } from 'vitest'
-import { app } from '../../app'
+import { app } from '../../../app'
 import { faker } from '@faker-js/faker'
-import { db } from '../../database/client'
-import { user, project } from '../../database/schema'
-import { makeUser } from '../../tests/factories/make-user'
-import { makeProject } from '../../tests/factories/make-project'
+import { db } from '../../../database/client'
+import { user, project } from '../../../database/schema'
+import { makeUser } from '../../factories/make-user'
+import { makeProject } from '../../factories/make-project'
 
 describe('Create Label', () => {
   afterEach(async () => {
@@ -26,10 +26,10 @@ describe('Create Label', () => {
           'Content-Type': 'application/json',
           Cookie: cookie,
         },
-        body: JSON.stringify({ 
-          name, 
-          color, 
-          projectId: projectCreated.id 
+        body: JSON.stringify({
+          name,
+          color,
+          projectId: projectCreated.id
         }),
       })
     )

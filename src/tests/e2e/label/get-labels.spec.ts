@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { makeUser } from "../../tests/factories/make-user";
-import { app } from "../../app";
-import { makeProject } from "../../tests/factories/make-project";
+import { makeUser } from "../../factories/make-user";
+import { app } from "../../../app";
+import { makeProject } from "../../factories/make-project";
 import { randomUUIDv7 } from "bun";
-import { makeLabel } from "../../tests/factories/make-label";
+import { makeLabel } from "../../factories/make-label";
 import { faker } from "@faker-js/faker";
 
 describe('Get Labels', () => {

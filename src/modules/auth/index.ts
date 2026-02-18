@@ -1,13 +1,13 @@
 import Elysia from "elysia";
-import { auth } from "../../auth";
+import { auth } from "./service";
 
-export const betterAuthPlugin = new Elysia({ name: "better-auth" })
-  .mount(auth.handler) 
+export const authPlugin = new Elysia({ name: "auth" })
+  .mount(auth.handler)
   .macro({
     auth: {
       async resolve({ status, request: { headers } }) {
         const session = await auth.api.getSession({ headers });
-        
+
         if (!session) {
           return status(401, { message: "Unauthorized" });
         }

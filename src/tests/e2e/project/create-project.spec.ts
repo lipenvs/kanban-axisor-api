@@ -1,9 +1,9 @@
 import { describe, it, expect, afterEach } from 'vitest'
-import { app } from '../../app'
+import { app } from '../../../app'
 import { faker } from '@faker-js/faker'
-import { db } from '../../database/client'
-import { user, project } from '../../database/schema'
-import { makeUser } from '../../tests/factories/make-user'
+import { db } from '../../../database/client'
+import { user, project } from '../../../database/schema'
+import { makeUser } from '../../factories/make-user'
 
 describe('Create Project', () => {
   afterEach(async () => {

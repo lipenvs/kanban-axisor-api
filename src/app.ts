@@ -1,17 +1,11 @@
 import { Elysia } from 'elysia';
 import { openapi } from '@elysiajs/openapi';
 import cors from '@elysiajs/cors';
-import { betterAuthPlugin, OpenAPI } from './http/plugins/better-auth';
-import { createProject } from './http/routes/create-project';
-import { getProjects } from './http/routes/get-projects';
-import { deleteProject } from './http/routes/delete-project';
-import { updateProject } from './http/routes/update-project';
+import { authPlugin, OpenAPI } from './modules/auth';
+import { projectController } from './modules/project';
+import { labelController } from './modules/label';
 import { env } from './env';
 import { toJSONSchema, type ZodType } from 'zod';
-import { createLabel } from './http/routes/create-label';
-import { getLabels } from './http/routes/get-labels';
-import { deleteLabel } from './http/routes/delete-label';
-import { updateLabel } from './http/routes/update-label';
 
 export const app = new Elysia()
   .use(
@@ -36,12 +30,6 @@ export const app = new Elysia()
       },
     })
   )
-  .use(betterAuthPlugin)
-  .use(createProject)
-  .use(getProjects)
-  .use(deleteProject)
-  .use(updateProject)
-  .use(createLabel)
-  .use(getLabels)
-  .use(deleteLabel)
-  .use(updateLabel);
+  .use(authPlugin)
+  .use(projectController)
+  .use(labelController);
