@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 import { authPlugin } from "../better-auth";
 import { ColumnService } from "./service";
-import { CreateColumn, GetColumns, UpdateColumn, DeleteColumn } from "./model";
+import { CreateColumn, GetColumns, UpdateColumn, ReorderColumn, DeleteColumn } from "./model";
 
 export const columnController = new Elysia({ prefix: "/columns" })
   .use(authPlugin)
@@ -43,6 +43,23 @@ export const columnController = new Elysia({ prefix: "/columns" })
         tags: ["Column"],
         responses: {
           200: { description: "Columns fetched successfully" },
+        },
+      },
+    }
+  )
+  .post(
+    "/reorder",
+    async ({ body, set }) => {
+      await ColumnService.reorder(body.activeId, body.overId);
+      set.status = 200;
+    },
+    {
+      auth: true,
+      body: ReorderColumn.body,
+      detail: {
+        tags: ["Column"],
+        responses: {
+          200: { description: "Columns reordered successfully" },
         },
       },
     }

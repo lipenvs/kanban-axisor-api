@@ -1,4 +1,4 @@
-import { eq, asc, desc } from "drizzle-orm";
+import { eq, asc, desc, and, gt, lt, gte, lte, sql } from "drizzle-orm";
 import { db } from "../../database/client";
 import { column } from "../../database/schema/column";
 
@@ -29,6 +29,42 @@ export abstract class ColumnService {
   static async update(id: string, updates: { title?: string; order?: number }) {
     const [updated] = await db.update(column).set(updates).where(eq(column.id, id)).returning();
     return updated;
+  }
+
+  static async reorder(activeId: string, overId: string) {
+    return db.transaction(async (tx) => {
+      const [active] = await tx.select({ id: column.id, order: column.order, projectId: column.projectId })
+        .from(column).where(eq(column.id, activeId));
+      const [over] = await tx.select({ id: column.id, order: column.order })
+        .from(column).where(eq(column.id, overId));
+
+      if (!active || !over) throw new Error("Column not found");
+
+      const oldOrder = active.order;
+      const newOrder = over.order;
+
+      if (oldOrder === newOrder) return;
+
+      if (oldOrder < newOrder) {
+        await tx.update(column)
+          .set({ order: sql`${column.order} - 1` })
+          .where(and(
+            eq(column.projectId, active.projectId),
+            gt(column.order, oldOrder),
+            lte(column.order, newOrder),
+          ));
+      } else {
+        await tx.update(column)
+          .set({ order: sql`${column.order} + 1` })
+          .where(and(
+            eq(column.projectId, active.projectId),
+            gte(column.order, newOrder),
+            lt(column.order, oldOrder),
+          ));
+      }
+
+      await tx.update(column).set({ order: newOrder }).where(eq(column.id, activeId));
+    });
   }
 
   static async delete(id: string) {

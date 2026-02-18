@@ -35,6 +35,13 @@ export const UpdateColumn = {
   response: Column,
 }
 
+export const ReorderColumn = {
+  body: z.object({
+    activeId: z.uuid(),
+    overId: z.uuid(),
+  }),
+}
+
 export const DeleteColumn = {
   params: z.object({
     id: z.string(),
