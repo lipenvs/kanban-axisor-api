@@ -1,0 +1,1 @@
+ALTER TABLE "attachment" RENAME COLUMN "url" TO "storage_key";
