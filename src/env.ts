@@ -9,6 +9,10 @@ const envSchema = z.object({
 	BETTER_AUTH_URL: z.url(),
 	FRONTEND_URL: z.url(),
 	RESEND_API_KEY: z.string(),
+	MINIO_ROOT_USER: z.string(),
+	MINIO_ROOT_PASSWORD: z.string(),
+	MINIO_ENDPOINT: z.url(),
+	MINIO_BUCKET: z.string(),
 });
 
 export const env = envSchema.parse(process.env);
