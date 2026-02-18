@@ -1,5 +1,5 @@
 import { Elysia } from "elysia";
-import { authPlugin } from "../auth";
+import { authPlugin } from "../better-auth";
 import { ProjectService } from "./service";
 import { CreateProject, GetProjects, UpdateProject, DeleteProject } from "./model";
 

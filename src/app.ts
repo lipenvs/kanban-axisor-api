@@ -1,7 +1,7 @@
 import { Elysia } from 'elysia';
 import { openapi } from '@elysiajs/openapi';
 import cors from '@elysiajs/cors';
-import { authPlugin, OpenAPI } from './modules/auth';
+import { authPlugin, OpenAPI } from './modules/better-auth';
 import { projectController } from './modules/project';
 import { labelController } from './modules/label';
 import { env } from './env';

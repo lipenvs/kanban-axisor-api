@@ -1,5 +1,5 @@
 import { Elysia } from "elysia";
-import { authPlugin } from "../auth";
+import { authPlugin } from "../better-auth";
 import { LabelService } from "./service";
 import { CreateLabel, GetLabels, UpdateLabel } from "./model";
 
