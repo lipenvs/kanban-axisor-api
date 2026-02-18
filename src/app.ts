@@ -6,6 +6,7 @@ import { projectController } from './modules/project';
 import { labelController } from './modules/label';
 import { columnController } from './modules/column';
 import { taskController } from './modules/task';
+import { attachmentController } from './modules/attachment';
 import { env } from './env';
 import { toJSONSchema, type ZodType } from 'zod';
 
@@ -39,4 +40,5 @@ export const app = new Elysia()
   .use(projectController)
   .use(labelController)
   .use(columnController)
-  .use(taskController);
+  .use(taskController)
+  .use(attachmentController);
