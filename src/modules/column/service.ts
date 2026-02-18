@@ -1,9 +1,18 @@
-import { eq, asc } from "drizzle-orm";
+import { eq, asc, desc } from "drizzle-orm";
 import { db } from "../../database/client";
 import { column } from "../../database/schema/column";
 
 export abstract class ColumnService {
-  static async create(title: string, projectId: string, order: number) {
+  static async create(title: string, projectId: string) {
+    const [lastColumn] = await db
+      .select({ order: column.order })
+      .from(column)
+      .where(eq(column.projectId, projectId))
+      .orderBy(desc(column.order))
+      .limit(1);
+
+    const order = lastColumn ? lastColumn.order + 1 : 0;
+
     const [created] = await db.insert(column).values({
       title,
       projectId,

@@ -7,7 +7,7 @@ import { app } from '../../../app'
 import { eq } from 'drizzle-orm'
 import { db } from '../../../database/client'
 import { faker } from '@faker-js/faker'
-import { label } from '../../../database/schema/label'
+import { label } from '../../../database/schema'
 
 describe('Update label', () => {
   it('should update a label', async () => {

@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { db } from '../../database/client'
-import { project } from '../../database/schema/project'
+import { project } from '../../database/schema'
 
 export async function makeProject(userId: string, title?: string) {
   const result = await db.insert(project).values({

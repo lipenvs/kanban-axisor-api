@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { db } from '../../database/client'
-import { label } from '../../database/schema/label'
+import { label } from '../../database/schema'
 
 export async function makeLabel(projectId: string, title?: string, color?: string) {
   const result = await db.insert(label).values({

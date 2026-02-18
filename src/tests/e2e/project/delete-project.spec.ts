@@ -5,7 +5,7 @@ import { makeProject } from '../../factories/make-project'
 import { randomUUIDv7 } from 'bun'
 import { eq } from 'drizzle-orm'
 import { db } from '../../../database/client'
-import { project } from '../../../database/schema/project'
+import { project } from '../../../database/schema'
 
 describe('Delete project', () => {
   it('should delete a project', async () => {

@@ -3,8 +3,7 @@ import { app } from '../../../app'
 import { faker } from '@faker-js/faker'
 import { db } from '../../../database/client'
 import { makeUser } from '../../factories/make-user'
-import { project } from '../../../database/schema/project'
-import { user } from '../../../database/schema/user'
+import { project, user } from '../../../database/schema'
 
 describe('Create Project', () => {
   afterEach(async () => {

@@ -8,7 +8,7 @@ export const columnController = new Elysia({ prefix: "/columns" })
   .post(
     "/",
     async ({ body, set }) => {
-      const created = await ColumnService.create(body.title, body.projectId, body.order);
+      const created = await ColumnService.create(body.title, body.projectId);
       set.status = 201;
       return created;
     },

@@ -5,7 +5,7 @@ import { makeProject } from '../../factories/make-project'
 import { makeColumn } from '../../factories/make-column'
 import { db } from '../../../database/client'
 import { eq } from 'drizzle-orm'
-import { column } from '../../../database/schema/column'
+import { column } from '../../../database/schema'
 
 describe('Update Column', () => {
   it('should update a column', async () => {

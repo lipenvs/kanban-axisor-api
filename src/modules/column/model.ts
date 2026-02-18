@@ -11,7 +11,6 @@ export const CreateColumn = {
   body: z.object({
     title: z.string().min(1),
     projectId: z.uuid(),
-    order: z.number().int().default(0),
   }),
   response: Column
 }

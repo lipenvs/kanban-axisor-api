@@ -6,7 +6,7 @@ import { makeLabel } from '../../factories/make-label'
 import { randomUUIDv7 } from 'bun'
 import { eq } from 'drizzle-orm'
 import { db } from '../../../database/client'
-import { label } from '../../../database/schema/label'
+import { label } from '../../../database/schema'
 
 describe('Delete label', () => {
   it('should delete a label', async () => {

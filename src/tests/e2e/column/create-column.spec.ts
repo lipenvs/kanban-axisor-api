@@ -31,4 +31,36 @@ describe('Create Column', () => {
       order: 0,
     }))
   })
+
+  it('should auto increment column order', async () => {
+    const { cookie, userId } = await makeUser()
+    const project = await makeProject(userId)
+
+    await app.handle(
+      new Request('http://localhost/columns', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Cookie: cookie,
+        },
+        body: JSON.stringify({ title: 'First', projectId: project.id }),
+      })
+    )
+
+    const response = await app.handle(
+      new Request('http://localhost/columns', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Cookie: cookie,
+        },
+        body: JSON.stringify({ title: 'Second', projectId: project.id }),
+      })
+    )
+
+    const body = await response.json()
+
+    expect(response.status).toBe(201)
+    expect(body.order).toBe(1)
+  })
 })
