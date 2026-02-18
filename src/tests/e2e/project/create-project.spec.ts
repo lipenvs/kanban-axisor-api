@@ -2,8 +2,9 @@ import { describe, it, expect, afterEach } from 'vitest'
 import { app } from '../../../app'
 import { faker } from '@faker-js/faker'
 import { db } from '../../../database/client'
-import { user, project } from '../../../database/schema'
 import { makeUser } from '../../factories/make-user'
+import { project } from '../../../database/schema/project'
+import { user } from '../../../database/schema/user'
 
 describe('Create Project', () => {
   afterEach(async () => {

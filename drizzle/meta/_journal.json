@@ -36,6 +36,13 @@
       "when": 1771353965694,
       "tag": "0004_nebulous_iron_fist",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1771387592424,
+      "tag": "0005_overconfident_magdalene",
+      "breakpoints": true
     }
   ]
 }

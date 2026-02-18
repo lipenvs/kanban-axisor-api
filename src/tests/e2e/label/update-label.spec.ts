@@ -6,8 +6,8 @@ import { randomUUIDv7 } from 'bun'
 import { app } from '../../../app'
 import { eq } from 'drizzle-orm'
 import { db } from '../../../database/client'
-import { label } from '../../../database/schema'  
 import { faker } from '@faker-js/faker'
+import { label } from '../../../database/schema/label'
 
 describe('Update label', () => {
   it('should update a label', async () => {

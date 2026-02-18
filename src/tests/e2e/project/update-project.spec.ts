@@ -5,7 +5,7 @@ import { makeProject } from '../../factories/make-project'
 import { app } from '../../../app'
 import { eq } from 'drizzle-orm'
 import { db } from '../../../database/client'
-import { project } from '../../../database/schema'
+import { project } from '../../../database/schema/project'
 
 describe('Update project', () => {
   it('should update a project', async () => {

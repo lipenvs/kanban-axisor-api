@@ -4,6 +4,7 @@ import cors from '@elysiajs/cors';
 import { authPlugin, OpenAPI } from './modules/better-auth';
 import { projectController } from './modules/project';
 import { labelController } from './modules/label';
+import { columnController } from './modules/column';
 import { env } from './env';
 import { toJSONSchema, type ZodType } from 'zod';
 
@@ -32,4 +33,5 @@ export const app = new Elysia()
   )
   .use(authPlugin)
   .use(projectController)
-  .use(labelController);
+  .use(labelController)
+  .use(columnController);
