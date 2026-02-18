@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 import { authPlugin } from "../auth";
 import { LabelService } from "./service";
-import { LabelModel } from "./model";
+import { CreateLabel, GetLabels, UpdateLabel } from "./model";
 
 export const labelController = new Elysia({ prefix: "/labels" })
   .use(authPlugin)
@@ -14,9 +14,9 @@ export const labelController = new Elysia({ prefix: "/labels" })
     },
     {
       auth: true,
-      body: LabelModel.createBody,
+      body: CreateLabel.body,
       response: {
-        201: LabelModel.createResponse,
+        201: CreateLabel.response,
       },
       detail: {
         description: "Create a new label",
@@ -35,10 +35,10 @@ export const labelController = new Elysia({ prefix: "/labels" })
       return { labels };
     },
     {
-      param: LabelModel.getParam,
-      query: LabelModel.getQuery,
+      param: GetLabels.params,
+      query: GetLabels.query,
       response: {
-        200: LabelModel.getResponse,
+        200: GetLabels.response,
       },
       detail: {
         description: "Get all labels",
@@ -56,8 +56,8 @@ export const labelController = new Elysia({ prefix: "/labels" })
       set.status = 200;
     },
     {
-      params: LabelModel.params,
-      body: LabelModel.updateBody,
+      params: UpdateLabel.params,
+      body: UpdateLabel.body,
       detail: {
         description: "Update a label",
         tags: ["Label"],
@@ -74,7 +74,7 @@ export const labelController = new Elysia({ prefix: "/labels" })
       set.status = 200;
     },
     {
-      params: LabelModel.params,
+      params: UpdateLabel.params,
       detail: {
         description: "Delete label",
         tags: ["Label"],

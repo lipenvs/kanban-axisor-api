@@ -1,41 +1,44 @@
-import z from "zod";
+import { z } from 'zod'
 
-export const LabelModel = {
-  createBody: z.object({
+export const Label = z.object({
+  id: z.string(),
+  name: z.string(),
+  color: z.string(),
+  projectId: z.string(),
+})
+
+export const CreateLabel = {
+  body: z.object({
     name: z.string().min(1),
     color: z.string().min(1),
     projectId: z.uuid(),
   }),
-
-  createResponse: z.object({
-    id: z.string(),
-    name: z.string(),
-    color: z.string(),
+  response: Label.pick({
+    id: true,
+    name: true,
+    color: true,
   }),
+}
 
-  getParam: z.object({
+export const GetLabels = {
+  params: z.object({
     projectId: z.string(),
   }),
-
-  getQuery: z.object({
+  query: z.object({
     search: z.string().optional(),
   }),
-
-  getResponse: z.object({
-    labels: z.array(z.object({
-      id: z.string(),
-      name: z.string(),
-      color: z.string(),
-      projectId: z.string(),
-    })),
+  response: z.object({
+    labels: z.array(Label),
   }),
+}
 
+export const UpdateLabel = {
   params: z.object({
     id: z.string(),
   }),
-
-  updateBody: z.object({
+  body: z.object({
     name: z.string(),
     color: z.string(),
   }),
-};
+  response: Label,
+}

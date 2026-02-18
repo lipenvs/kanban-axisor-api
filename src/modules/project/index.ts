@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 import { authPlugin } from "../auth";
 import { ProjectService } from "./service";
-import { ProjectModel } from "./model";
+import { CreateProject, GetProjects, UpdateProject, DeleteProject } from "./model";
 
 export const projectController = new Elysia({ prefix: "/projects" })
   .use(authPlugin)
@@ -14,9 +14,9 @@ export const projectController = new Elysia({ prefix: "/projects" })
     },
     {
       auth: true,
-      body: ProjectModel.createBody,
+      body: CreateProject.body,
       response: {
-        201: ProjectModel.createResponse,
+        201: CreateProject.response,
       },
       detail: {
         description: "Create a new project",
@@ -35,9 +35,9 @@ export const projectController = new Elysia({ prefix: "/projects" })
       return { projects };
     },
     {
-      query: ProjectModel.getQuery,
+      query: GetProjects.query,
       response: {
-        200: ProjectModel.getResponse,
+        200: GetProjects.response,
       },
       detail: {
         description: "Get all projects",
@@ -55,8 +55,8 @@ export const projectController = new Elysia({ prefix: "/projects" })
       set.status = 200;
     },
     {
-      params: ProjectModel.params,
-      body: ProjectModel.updateBody,
+      params: UpdateProject.params,
+      body: UpdateProject.body,
       detail: {
         description: "Update a project",
         tags: ["Project"],
@@ -73,7 +73,7 @@ export const projectController = new Elysia({ prefix: "/projects" })
       set.status = 200;
     },
     {
-      params: ProjectModel.params,
+      params: DeleteProject.params,
       detail: {
         description: "Delete project",
         tags: ["Project"],

@@ -1,31 +1,38 @@
-import z from "zod";
+import { z } from 'zod'
 
-export const ProjectModel = {
-  createBody: z.object({
+export const Project = z.object({
+  id: z.string(),
+  name: z.string(),
+})
+
+export const CreateProject = {
+  body: z.object({
     name: z.string().min(1),
   }),
+  response: Project,
+}
 
-  createResponse: z.object({
-    id: z.string(),
-    name: z.string(),
-  }),
-
-  getQuery: z.object({
+export const GetProjects = {
+  query: z.object({
     search: z.string().optional(),
   }),
-
-  getResponse: z.object({
-    projects: z.array(z.object({
-      id: z.string(),
-      name: z.string(),
-    })),
+  response: z.object({
+    projects: z.array(Project),
   }),
+}
 
+export const UpdateProject = {
   params: z.object({
     id: z.string(),
   }),
-
-  updateBody: z.object({
+  body: z.object({
     name: z.string(),
   }),
-};
+  response: Project,
+}
+
+export const DeleteProject = {
+  params: z.object({
+    id: z.string(),
+  }),
+}
