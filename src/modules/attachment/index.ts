@@ -92,8 +92,7 @@ export const attachmentController = new Elysia({ prefix: "/attachments" })
         set.status = 404;
         return { error: "Attachment not found" };
       }
-      set.status = 200;
-      return { url };
+      return Response.redirect(url);
     },
     {
       auth: true,

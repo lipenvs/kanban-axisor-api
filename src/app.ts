@@ -52,6 +52,12 @@ export const app = new Elysia()
           const { $schema, ...rest } = toJSONSchema(schema, {
             target: 'openapi-3.0',
             unrepresentable: 'any',
+            override: ({ zodSchema, jsonSchema }) => {
+              if ((zodSchema as any)._zod?.def?.type === 'date') {
+                jsonSchema.type = 'string';
+                jsonSchema.format = 'date-time';
+              }
+            },
           }) as Record<string, unknown>;
           return rest;
         },

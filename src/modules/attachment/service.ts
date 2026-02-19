@@ -8,10 +8,8 @@ export abstract class AttachmentService {
   static async upload(taskId: string, file: File) {
     const storageKey = `${taskId}/${crypto.randomUUID()}-${file.name}`;
 
-    // Upload to MinIO/S3
     await s3.write(storageKey, file);
 
-    // Create DB record
     const [created] = await db
       .insert(attachment)
       .values({
@@ -24,7 +22,6 @@ export abstract class AttachmentService {
       })
       .returning();
 
-    // Enqueue background scan job
     await attachmentQueue.add("scan", { attachmentId: created.id });
 
     return created;

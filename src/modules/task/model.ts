@@ -7,7 +7,7 @@ export const Task = z.object({
   columnId: z.string(),
   labelId: z.string().nullable(),
   description: z.string().nullable().optional(),
-  dueDate: z.date().nullable().optional(),
+  dueDate: z.coerce.date().nullable().optional(),
   createdAt: z.date().nullable().optional(),
   updatedAt: z.date().nullable().optional(),
 })
