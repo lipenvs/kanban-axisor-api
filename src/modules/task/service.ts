@@ -1,7 +1,8 @@
-import { eq, asc, desc, and, gt, lt, gte, lte, sql } from "drizzle-orm";
+import { eq, asc, desc, and, lt, sql } from "drizzle-orm";
 import { db } from "../../database/client";
 import { task } from "../../database/schema/task";
 import { column } from "../../database/schema/column";
+import { generateKeyBetween } from "fractional-indexing";
 
 export abstract class TaskService {
   static async create(data: { title: string; columnId: string; labelId: string; description?: string | null; dueDate?: Date | null }) {
@@ -12,7 +13,7 @@ export abstract class TaskService {
       .orderBy(desc(task.order))
       .limit(1);
 
-    const order = lastTask ? lastTask.order + 10000 : 10000;
+    const order = generateKeyBetween(lastTask?.order ?? null, null);
 
     const [created] = await db.insert(task).values({
       ...data,
@@ -61,13 +62,13 @@ export abstract class TaskService {
       if (!active) throw new Error("Task not found");
 
       const targetColumnId = newColumnId || active.columnId;
-      const isDifferentColumn = active.columnId !== targetColumnId;
 
-      if (!overId && !isDifferentColumn) return;
+      if (!overId && active.columnId === targetColumnId) return;
 
-      let newOrder: number;
+      let newOrder: string;
 
-      if (!overId && isDifferentColumn) {
+      if (!overId) {
+        // Moving to end of target column (or empty column)
         const [lastTask] = await tx
           .select({ order: task.order })
           .from(task)
@@ -75,46 +76,24 @@ export abstract class TaskService {
           .orderBy(desc(task.order))
           .limit(1);
 
-        newOrder = lastTask ? lastTask.order + 10000 : 10000;
+        newOrder = generateKeyBetween(lastTask?.order ?? null, null);
       } else {
-        const [over] = await tx.select().from(task).where(eq(task.id, overId!));
+        // Positioning before overId
+        const [over] = await tx.select().from(task).where(eq(task.id, overId));
         if (!over) throw new Error("Over task not found");
 
         const [prev] = await tx
           .select({ order: task.order })
           .from(task)
-          .where(and(eq(task.columnId, targetColumnId), lt(task.order, over.order)))
+          .where(and(
+            eq(task.columnId, targetColumnId),
+            lt(task.order, over.order),
+            sql`${task.id} != ${activeId}`,
+          ))
           .orderBy(desc(task.order))
           .limit(1);
 
-        const prevOrder = prev ? prev.order : 0;
-        const nextOrder = over.order;
-
-        newOrder = Math.floor((prevOrder + nextOrder) / 2);
-
-        if (newOrder === prevOrder || newOrder === nextOrder || nextOrder - prevOrder < 2) {
-          const allTasks = await tx
-            .select({ id: task.id })
-            .from(task)
-            .where(eq(task.columnId, targetColumnId))
-            .orderBy(asc(task.order));
-
-          let orderedIds: string[] = [];
-          for (const t of allTasks) {
-            if (t.id === activeId) continue;
-            if (t.id === overId) orderedIds.push(activeId);
-            orderedIds.push(t.id);
-          }
-
-          if (!orderedIds.includes(activeId)) orderedIds.push(activeId);
-
-          let counter = 10000;
-          for (const id of orderedIds) {
-            await tx.update(task).set({ order: counter, columnId: targetColumnId }).where(eq(task.id, id));
-            counter += 10000;
-          }
-          return;
-        }
+        newOrder = generateKeyBetween(prev?.order ?? null, over.order);
       }
 
       await tx.update(task).set({

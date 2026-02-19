@@ -32,7 +32,7 @@ export const GetAttachments = {
 
 export const GetAttachmentsByTasks = {
   query: z.object({
-    taskIds: z.string().optional(),
+    taskIds: z.union([z.string(), z.array(z.string())]).optional(),
   }),
   response: z.object({
     attachments: z.array(Attachment),

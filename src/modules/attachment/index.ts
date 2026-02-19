@@ -65,7 +65,11 @@ export const attachmentController = new Elysia({ prefix: "/attachments" })
   .get(
     "/by-tasks",
     async ({ query, set }) => {
-      const taskIds = query.taskIds ? query.taskIds.split(",") : [];
+      const taskIds = query.taskIds
+        ? Array.isArray(query.taskIds)
+          ? query.taskIds
+          : query.taskIds.split(",")
+        : [];
       const attachments = await AttachmentService.getByTaskIds(taskIds);
       set.status = 200;
       return { attachments };

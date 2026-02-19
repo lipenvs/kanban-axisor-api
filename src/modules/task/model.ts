@@ -3,7 +3,7 @@ import { z } from 'zod'
 export const Task = z.object({
   id: z.string(),
   title: z.string(),
-  order: z.number(),
+  order: z.string(),
   columnId: z.string(),
   labelId: z.string().nullable(),
   description: z.string().nullable().optional(),
@@ -43,7 +43,7 @@ export const UpdateTask = {
     labelId: z.uuid().nullable().optional(),
     description: z.string().optional(),
     dueDate: z.coerce.date().nullable().optional(),
-    order: z.number().int().optional(),
+    order: z.string().optional(),
   }),
   response: Task,
 }

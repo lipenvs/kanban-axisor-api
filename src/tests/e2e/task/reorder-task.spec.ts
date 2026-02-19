@@ -16,9 +16,9 @@ describe('Reorder Tasks', () => {
     const column = await makeColumn(project.id)
     const label = await makeLabel(project.id)
 
-    const task1 = await makeTask(column.id, label.id, 10000)
-    const task2 = await makeTask(column.id, label.id, 20000)
-    const task3 = await makeTask(column.id, label.id, 30000)
+    const task1 = await makeTask(column.id, label.id, 'a0')
+    const task2 = await makeTask(column.id, label.id, 'a1')
+    const task3 = await makeTask(column.id, label.id, 'a2')
 
     const response = await app.handle(
       new Request('http://localhost/tasks/reorder', {
@@ -44,15 +44,14 @@ describe('Reorder Tasks', () => {
       .orderBy(asc(task.order))
 
     expect(tasks).toHaveLength(3)
-    
+
     expect(tasks[0].id).toBe(task2.id)
-    expect(tasks[0].order).toBe(20000)
-    
     expect(tasks[1].id).toBe(task1.id) // Moved before task3
-    expect(tasks[1].order).toBe(25000)
-    
     expect(tasks[2].id).toBe(task3.id)
-    expect(tasks[2].order).toBe(30000)
+
+    // Verify ordering is correct
+    expect(tasks[0].order < tasks[1].order).toBe(true)
+    expect(tasks[1].order < tasks[2].order).toBe(true)
   })
 
   it('should move task to another column', async () => {
@@ -62,8 +61,8 @@ describe('Reorder Tasks', () => {
     const column2 = await makeColumn(project.id)
     const label = await makeLabel(project.id)
 
-    const task1 = await makeTask(column1.id, label.id, 10000)
-    
+    const task1 = await makeTask(column1.id, label.id, 'a0')
+
     const response = await app.handle(
       new Request('http://localhost/tasks/reorder', {
         method: 'POST',
@@ -73,7 +72,6 @@ describe('Reorder Tasks', () => {
         },
         body: JSON.stringify({
           activeId: task1.id,
-          // overId is undefined for moving to empty column
           columnId: column2.id,
         }),
       })
@@ -83,7 +81,5 @@ describe('Reorder Tasks', () => {
 
     const taskInDb = await db.select().from(task).where(eq(task.id, task1.id))
     expect(taskInDb[0].columnId).toBe(column2.id)
-    expect(taskInDb[0].columnId).toBe(column2.id)
-    expect(taskInDb[0].order).toBe(10000)
   })
 })
