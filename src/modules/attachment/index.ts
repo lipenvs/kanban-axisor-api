@@ -1,6 +1,13 @@
 import { Elysia, t } from "elysia";
 import { authPlugin } from "../better-auth";
 import { AttachmentService } from "./service";
+import {
+  UploadAttachment,
+  GetAttachments,
+  GetAttachmentsByTasks,
+  DownloadAttachment,
+  DeleteAttachment,
+} from "./model";
 
 export const attachmentController = new Elysia({ prefix: "/attachments" })
   .use(authPlugin)
@@ -19,8 +26,13 @@ export const attachmentController = new Elysia({ prefix: "/attachments" })
     },
     {
       auth: true,
-      params: t.Object({ taskId: t.String({ format: "uuid" }) }),
-      body: t.Object({ file: t.File() }),
+      params: UploadAttachment.params,
+      body: t.Object({
+        file: t.File()
+      }),
+      response: {
+        201: UploadAttachment.response,
+      },
       detail: {
         tags: ["Attachment"],
         responses: {
@@ -31,13 +43,17 @@ export const attachmentController = new Elysia({ prefix: "/attachments" })
   )
   .get(
     "/:taskId",
-    async ({ params }) => {
+    async ({ params, set }) => {
       const attachments = await AttachmentService.getByTaskId(params.taskId);
+      set.status = 200;
       return { attachments };
     },
     {
       auth: true,
-      params: t.Object({ taskId: t.String({ format: "uuid" }) }),
+      params: GetAttachments.params,
+      response: {
+        200: GetAttachments.response,
+      },
       detail: {
         tags: ["Attachment"],
         responses: {
@@ -48,14 +64,18 @@ export const attachmentController = new Elysia({ prefix: "/attachments" })
   )
   .get(
     "/by-tasks",
-    async ({ query }) => {
+    async ({ query, set }) => {
       const taskIds = query.taskIds ? query.taskIds.split(",") : [];
       const attachments = await AttachmentService.getByTaskIds(taskIds);
+      set.status = 200;
       return { attachments };
     },
     {
       auth: true,
-      query: t.Object({ taskIds: t.Optional(t.String()) }),
+      query: GetAttachmentsByTasks.query,
+      response: {
+        200: GetAttachmentsByTasks.response,
+      },
       detail: {
         tags: ["Attachment"],
         responses: {
@@ -72,11 +92,16 @@ export const attachmentController = new Elysia({ prefix: "/attachments" })
         set.status = 404;
         return { error: "Attachment not found" };
       }
+      set.status = 200;
       return { url };
     },
     {
       auth: true,
-      params: t.Object({ id: t.String({ format: "uuid" }) }),
+      params: DownloadAttachment.params,
+      response: {
+        200: DownloadAttachment.response,
+        404: t.Object({ error: t.String() }), // Fallback for error or use Zod if we defined Error schema
+      },
       detail: {
         tags: ["Attachment"],
         responses: {
@@ -94,7 +119,10 @@ export const attachmentController = new Elysia({ prefix: "/attachments" })
     },
     {
       auth: true,
-      params: t.Object({ id: t.String({ format: "uuid" }) }),
+      params: DeleteAttachment.params,
+      response: {
+        200: DeleteAttachment.response,
+      },
       detail: {
         tags: ["Attachment"],
         responses: {

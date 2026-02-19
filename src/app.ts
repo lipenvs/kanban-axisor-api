@@ -1,4 +1,4 @@
-import { Elysia } from 'elysia';
+import { Elysia, t } from 'elysia';
 import { openapi } from '@elysiajs/openapi';
 import cors from '@elysiajs/cors';
 import { authPlugin, OpenAPI } from './modules/better-auth';
@@ -9,14 +9,36 @@ import { taskController } from './modules/task';
 import { attachmentController } from './modules/attachment';
 import { env } from './env';
 import { toJSONSchema, type ZodType } from 'zod';
+import { opentelemetry } from '@elysiajs/opentelemetry';
+import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-node';
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto';
 
 export const app = new Elysia()
+  .get('/health', () => ({ status: 'ok' }), {
+    response: t.Object({ status: t.String() }),
+    detail: { hide: true },
+  })
   .use(
     cors({
       origin: env.FRONTEND_URL,
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
       credentials: true,
       allowedHeaders: ['Content-Type', 'Authorization'],
+    })
+  )
+  .use(
+    opentelemetry({
+      serviceName: 'axisor-kanban-api',
+      spanProcessors: [
+        new BatchSpanProcessor(
+          new OTLPTraceExporter({
+            url: `${Bun.env.OTEL_EXPORTER_OTLP_ENDPOINT}/v1/traces`,
+            headers: {
+              Authorization: Bun.env.OTEL_EXPORTER_OTLP_HEADERS?.replace('Authorization=', '') ?? '',
+            },
+          })
+        ),
+      ],
     })
   )
   .use(

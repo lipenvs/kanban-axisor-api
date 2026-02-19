@@ -10,6 +10,7 @@ services:
     ports:
       - '5432:5432'
     volumes:
+      - pgdata:/var/lib/postgresql
       - ./docker/setup.sql:/docker-entrypoint-initdb.d/setup.sql
   redis:
     image: redis:7
@@ -33,4 +34,5 @@ services:
     command: server /data --console-address ":9001"
 
 volumes:
+  pgdata:
   minio-data:
