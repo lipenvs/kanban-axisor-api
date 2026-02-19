@@ -1,6 +1,10 @@
-import { eq, asc, desc, and, gt, lt, gte, lte, sql } from "drizzle-orm";
+import { eq, asc, desc, and, lt, sql } from "drizzle-orm";
 import { db } from "../../database/client";
 import { column } from "../../database/schema/column";
+import { task } from "../../database/schema/task";
+import { label } from "../../database/schema/label";
+import { user } from "../../database/schema/user";
+import { generateKeyBetween } from "fractional-indexing";
 
 export abstract class ColumnService {
   static async create(title: string, projectId: string) {
@@ -11,7 +15,7 @@ export abstract class ColumnService {
       .orderBy(desc(column.order))
       .limit(1);
 
-    const order = lastColumn ? lastColumn.order + 1 : 0;
+    const order = generateKeyBetween(lastColumn?.order ?? null, null);
 
     const [created] = await db.insert(column).values({
       title,
@@ -26,48 +30,98 @@ export abstract class ColumnService {
     return db.select().from(column).where(eq(column.projectId, projectId)).orderBy(asc(column.order));
   }
 
-  static async update(id: string, updates: { title?: string; order?: number }) {
+  static async update(id: string, updates: { title?: string }) {
     const [updated] = await db.update(column).set(updates).where(eq(column.id, id)).returning();
     return updated;
   }
 
-  static async reorder(activeId: string, overId: string) {
+  static async reorder(activeId: string, overId?: string) {
     return db.transaction(async (tx) => {
-      const [active] = await tx.select({ id: column.id, order: column.order, projectId: column.projectId })
-        .from(column).where(eq(column.id, activeId));
-      const [over] = await tx.select({ id: column.id, order: column.order })
-        .from(column).where(eq(column.id, overId));
+      const [active] = await tx.select().from(column).where(eq(column.id, activeId));
+      if (!active) throw new Error("Column not found");
 
-      if (!active || !over) throw new Error("Column not found");
+      let newOrder: string;
 
-      const oldOrder = active.order;
-      const newOrder = over.order;
+      if (!overId) {
+        const [lastColumn] = await tx
+          .select({ order: column.order })
+          .from(column)
+          .where(eq(column.projectId, active.projectId))
+          .orderBy(desc(column.order))
+          .limit(1);
 
-      if (oldOrder === newOrder) return;
-
-      if (oldOrder < newOrder) {
-        await tx.update(column)
-          .set({ order: sql`${column.order} - 1` })
-          .where(and(
-            eq(column.projectId, active.projectId),
-            gt(column.order, oldOrder),
-            lte(column.order, newOrder),
-          ));
+        newOrder = generateKeyBetween(lastColumn?.order ?? null, null);
       } else {
-        await tx.update(column)
-          .set({ order: sql`${column.order} + 1` })
+        const [over] = await tx.select().from(column).where(eq(column.id, overId));
+        if (!over) throw new Error("Over column not found");
+
+        const [prev] = await tx
+          .select({ order: column.order })
+          .from(column)
           .where(and(
             eq(column.projectId, active.projectId),
-            gte(column.order, newOrder),
-            lt(column.order, oldOrder),
-          ));
+            lt(column.order, over.order),
+            sql`${column.id} != ${activeId}`,
+          ))
+          .orderBy(desc(column.order))
+          .limit(1);
+
+        newOrder = generateKeyBetween(prev?.order ?? null, over.order);
       }
 
-      await tx.update(column).set({ order: newOrder }).where(eq(column.id, activeId));
+      await tx.update(column).set({
+        order: newOrder,
+        updatedAt: new Date(),
+      }).where(eq(column.id, activeId));
     });
   }
 
   static async delete(id: string) {
     await db.delete(column).where(eq(column.id, id));
+  }
+
+  static async getKanbanBoard(projectId: string) {
+    const columns = await db
+      .select()
+      .from(column)
+      .where(eq(column.projectId, projectId))
+      .orderBy(asc(column.order));
+
+    const columnsWithTasks = await Promise.all(
+      columns.map(async (col) => {
+        const tasks = await db
+          .select({
+            id: task.id,
+            title: task.title,
+            order: task.order,
+            columnId: task.columnId,
+            labelId: task.labelId,
+            assigneeId: task.assigneeId,
+            dueDate: task.dueDate,
+            label: {
+              name: label.name,
+              color: label.color,
+            },
+            assignee: {
+              name: user.name,
+              image: user.image,
+            },
+          })
+          .from(task)
+          .leftJoin(label, eq(task.labelId, label.id))
+          .leftJoin(user, eq(task.assigneeId, user.id))
+          .where(eq(task.columnId, col.id))
+          // We order by task.order lexicographically as it is a string based on the schema
+          .orderBy(asc(task.order));
+
+        return {
+          id: col.id,
+          title: col.title,
+          cards: tasks,
+        };
+      })
+    );
+
+    return columnsWithTasks;
   }
 }

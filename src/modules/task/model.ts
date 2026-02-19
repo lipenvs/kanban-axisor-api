@@ -1,35 +1,27 @@
 import { z } from 'zod'
+import { task } from '../../database/schema/task';
+import { createSelectSchema } from 'drizzle-zod';
 
-export const Task = z.object({
-  id: z.string(),
-  title: z.string(),
-  order: z.string(),
-  columnId: z.string(),
-  labelId: z.string().nullable(),
-  description: z.string().nullable().optional(),
-  dueDate: z.coerce.date().nullable().optional(),
-  createdAt: z.date().nullable().optional(),
-  updatedAt: z.date().nullable().optional(),
-})
+export const TaskSchema = createSelectSchema(task)
 
 export const CreateTask = {
   body: z.object({
     title: z.string().min(1),
     columnId: z.uuid(),
     labelId: z.uuid().nullable().optional(),
+    assigneeId: z.uuid().nullable().optional(),
     description: z.string().optional(),
     dueDate: z.coerce.date().nullable().optional(),
   }),
-  response: Task
+  response: TaskSchema
 }
 
 export const GetTasks = {
   query: z.object({
-    columnId: z.uuid().optional(),
-    projectId: z.uuid().optional(),
+    projectId: z.uuid(),
   }),
   response: z.object({
-    tasks: z.array(Task),
+    tasks: z.array(TaskSchema.omit({ createdAt: true, updatedAt: true })),
   }),
 }
 
@@ -41,18 +33,19 @@ export const UpdateTask = {
     title: z.string().optional(),
     columnId: z.uuid().optional(),
     labelId: z.uuid().nullable().optional(),
+    assigneeId: z.uuid().nullable().optional(),
     description: z.string().optional(),
     dueDate: z.coerce.date().nullable().optional(),
     order: z.string().optional(),
   }),
-  response: Task,
+  response: TaskSchema,
 }
 
 export const ReorderTask = {
   body: z.object({
     activeId: z.uuid(),
     overId: z.uuid().optional(),
-    columnId: z.uuid().optional(), // If moving between columns
+    columnId: z.uuid().optional(),
   }),
 }
 

@@ -29,7 +29,7 @@ export const taskController = new Elysia({ prefix: "/tasks" })
   .get(
     "/",
     async ({ query, set }) => {
-      const tasks = await TaskService.getAll(query.columnId, query.projectId);
+      const tasks = await TaskService.getAllByProjectId(query.projectId);
       set.status = 200;
       return { tasks };
     },

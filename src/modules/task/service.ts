@@ -5,7 +5,7 @@ import { column } from "../../database/schema/column";
 import { generateKeyBetween } from "fractional-indexing";
 
 export abstract class TaskService {
-  static async create(data: { title: string; columnId: string; labelId: string; description?: string | null; dueDate?: Date | null }) {
+  static async create(data: { title: string; columnId: string; labelId?: string | null; assigneeId?: string | null; description?: string | null; dueDate?: Date | null }) {
     const [lastTask] = await db
       .select({ order: task.order })
       .from(task)
@@ -23,32 +23,22 @@ export abstract class TaskService {
     return created;
   }
 
-  static async getAll(columnId?: string, projectId?: string) {
-    if (columnId) {
-      return db.select().from(task).where(eq(task.columnId, columnId)).orderBy(asc(task.order));
-    }
-
-    if (projectId) {
-      // Fetch all tasks for all columns in the project
-      return db
-        .select({
-          id: task.id,
-          title: task.title,
-          order: task.order,
-          columnId: task.columnId,
-          labelId: task.labelId,
-          description: task.description,
-          dueDate: task.dueDate,
-          createdAt: task.createdAt,
-          updatedAt: task.updatedAt,
-        })
-        .from(task)
-        .innerJoin(column, eq(task.columnId, column.id))
-        .where(eq(column.projectId, projectId))
-        .orderBy(asc(column.order), asc(task.order)); // Sort by column order then task order
-    }
-
-    return [];
+  static async getAllByProjectId(projectId: string) {
+    return db
+      .select({
+        id: task.id,
+        title: task.title,
+        order: task.order,
+        columnId: task.columnId,
+        labelId: task.labelId,
+        assigneeId: task.assigneeId,
+        description: task.description,
+        dueDate: task.dueDate,
+      })
+      .from(task)
+      .innerJoin(column, eq(task.columnId, column.id))
+      .where(eq(column.projectId, projectId))
+      .orderBy(asc(column.order), asc(task.order));
   }
 
   static async update(id: string, updates: Partial<typeof task.$inferInsert>) {
