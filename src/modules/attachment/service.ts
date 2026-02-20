@@ -2,7 +2,8 @@ import { eq } from "drizzle-orm";
 import { db } from "../../database/client";
 import { attachment } from "../../database/schema/attachment";
 import { s3 } from "../../utils/s3";
-import { attachmentQueue } from "../../queue";
+import { attachmentDeleteQueue, attachmentQueue } from "../../queue";
+import { task } from "../../database/schema";
 
 export abstract class AttachmentService {
   static async upload(taskId: string, file: File) {
@@ -53,15 +54,19 @@ export abstract class AttachmentService {
   }
 
   static async delete(id: string) {
-    const [found] = await db
-      .select()
-      .from(attachment)
-      .where(eq(attachment.id, id));
-    if (found) {
-      await s3.delete(found.storageKey);
-      await db.delete(attachment).where(eq(attachment.id, id));
-    }
+  const attachments = await db
+    .select({ storageKey: attachment.storageKey })
+    .from(attachment)
+    .where(eq(attachment.taskId, id));
+
+  await db.delete(task).where(eq(task.id, id));
+
+  if (attachments.length > 0) {
+    await attachmentDeleteQueue.add("attachment-delete", {
+      storageKeys: attachments.map((a) => a.storageKey),
+    });
   }
+}
 
   static async getPresignedUrl(id: string) {
     const [found] = await db
