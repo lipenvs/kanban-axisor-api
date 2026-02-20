@@ -1,7 +1,8 @@
 import { and, ilike, SQL } from "drizzle-orm";
 import { eq } from "drizzle-orm";
 import { db } from "../../database/client";
-import { project } from "../../database/schema";
+import { attachment, column, project, task } from "../../database/schema";
+import { attachmentDeleteQueue } from "../../queue";
 
 export abstract class ProjectService {
   static async create(name: string, userId: string) {
@@ -28,6 +29,19 @@ export abstract class ProjectService {
   }
 
   static async delete(id: string) {
-    await db.delete(project).where(eq(project.id, id));
+  const attachments = await db
+    .select({ storageKey: attachment.storageKey })
+    .from(attachment)
+    .innerJoin(task, eq(attachment.taskId, task.id))
+    .innerJoin(column, eq(task.columnId, column.id))
+    .where(eq(column.projectId, id));
+
+  await db.delete(project).where(eq(project.id, id));
+
+  if (attachments.length > 0) {
+    await attachmentDeleteQueue.add("attachment-delete", {
+      storageKeys: attachments.map((a) => a.storageKey),
+    });
   }
+}
 }

@@ -4,6 +4,8 @@ import { column } from "../../database/schema/column";
 import { task } from "../../database/schema/task";
 import { label } from "../../database/schema/label";
 import { user } from "../../database/schema/user";
+import { attachment } from "../../database/schema";
+import { attachmentDeleteQueue } from "../../queue";
 
 export abstract class ColumnService {
   static async create(title: string, projectId: string) {
@@ -88,8 +90,20 @@ static async reorder(items: { id: string; order: number }[]) {
 }
 
   static async delete(id: string) {
-    await db.delete(column).where(eq(column.id, id));
+  const attachments = await db
+    .select({ storageKey: attachment.storageKey })
+    .from(attachment)
+    .innerJoin(task, eq(attachment.taskId, task.id))
+    .where(eq(task.columnId, id));
+
+  await db.delete(column).where(eq(column.id, id));
+
+  if (attachments.length > 0) {
+    await attachmentDeleteQueue.add("attachment-delete", {
+      storageKeys: attachments.map((a) => a.storageKey),
+    });
   }
+}
 
   
 }
