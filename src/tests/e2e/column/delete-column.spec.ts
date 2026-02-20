@@ -1,13 +1,18 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, afterEach } from 'vitest'
 import { app } from '../../../app'
 import { makeUser } from '../../factories/make-user'
 import { makeProject } from '../../factories/make-project'
 import { makeColumn } from '../../factories/make-column'
 import { db } from '../../../database/client'
 import { eq } from 'drizzle-orm'
-import { column } from '../../../database/schema'
+import { column, user } from '../../../database/schema'
 
 describe('Delete Column', () => {
+  afterEach(async () => {
+    await db.delete(column)
+    await db.delete(user)
+  })
+
   it('should delete a column', async () => {
     const { cookie, userId } = await makeUser()
     const project = await makeProject(userId)

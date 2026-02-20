@@ -3,7 +3,7 @@ import { z } from 'zod'
 export const Column = z.object({
   id: z.string(),
   title: z.string(),
-  order: z.string(),
+  order: z.number(),
   projectId: z.string(),
 })
 
@@ -32,13 +32,6 @@ export const ReorderColumn = {
   }),
 }
 
-export const SaveColumnPositions = {
-  body: z.object({
-    projectId: z.uuid(),
-    columnIds: z.array(z.uuid()).min(1),
-  }),
-}
-
 export const DeleteColumn = {
   params: z.object({
     id: z.string(),
@@ -48,7 +41,7 @@ export const DeleteColumn = {
 export const KanbanCard = z.object({
   id: z.string(),
   title: z.string(),
-  order: z.string(),
+  order: z.number(),
   columnId: z.string(),
   labelId: z.string().nullable(),
   assigneeId: z.string().nullable(),

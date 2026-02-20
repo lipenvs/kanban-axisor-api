@@ -4,57 +4,30 @@ import { column } from "../../database/schema/column";
 import { task } from "../../database/schema/task";
 import { label } from "../../database/schema/label";
 import { user } from "../../database/schema/user";
-import { generateKeyBetween } from "fractional-indexing";
 
 export abstract class ColumnService {
   static async create(title: string, projectId: string) {
-    const [lastColumn] = await db
-      .select({ order: column.order })
-      .from(column)
-      .where(eq(column.projectId, projectId))
-      .orderBy(desc(column.order))
-      .limit(1);
+  const [lastColumn] = await db
+    .select({ order: column.order })
+    .from(column)
+    .where(eq(column.projectId, projectId))
+    .orderBy(desc(column.order))
+    .limit(1);
 
-    const order = generateKeyBetween(lastColumn?.order ?? null, null);
+  const order = (lastColumn?.order ?? 0) + 1000;
 
-    const [created] = await db.insert(column).values({
-      title,
-      projectId,
-      order,
-    }).returning();
+  const [created] = await db.insert(column).values({
+    title,
+    projectId,
+    order,
+  }).returning();
 
-    return created;
-  }
+  return created;
+}
 
   static async update(id: string, updates: { title?: string }) {
     const [updated] = await db.update(column).set(updates).where(eq(column.id, id)).returning();
     return updated;
-  }
-
-  /** Salva a posição das colunas a partir da lista ordenada de ids (índice = ordem). */
-  static async saveOrder(projectId: string, columnIds: string[]) {
-    return db.transaction(async (tx) => {
-      const existing = await tx
-        .select({ id: column.id })
-        .from(column)
-        .where(eq(column.projectId, projectId));
-
-      const existingIds = new Set(existing.map((c) => c.id));
-      const validIds = columnIds.filter((id) => existingIds.has(id));
-      if (validIds.length !== columnIds.length) {
-        throw new Error("Some column ids do not belong to this project");
-      }
-
-      let prevOrder: string | null = null;
-      for (const columnId of validIds) {
-        const order = generateKeyBetween(prevOrder, null);
-        await tx
-          .update(column)
-          .set({ order, updatedAt: new Date() })
-          .where(eq(column.id, columnId));
-        prevOrder = order;
-      }
-    });
   }
 
   static async delete(id: string) {

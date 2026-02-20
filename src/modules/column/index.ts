@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 import { authPlugin } from "../better-auth";
 import { ColumnService } from "./service";
-import { CreateColumn, UpdateColumn, SaveColumnPositions, DeleteColumn, GetKanbanBoard } from "./model";
+import { CreateColumn, UpdateColumn, DeleteColumn, GetKanbanBoard } from "./model";
 
 export const columnController = new Elysia({ prefix: "/columns" })
   .use(authPlugin)
@@ -45,24 +45,6 @@ export const columnController = new Elysia({ prefix: "/columns" })
         tags: ["Column"],
         responses: {
           200: { description: "Kanban board fetched successfully" },
-        },
-      },
-    }
-  )
-  .put(
-    "/positions",
-    async ({ body, set }) => {
-      await ColumnService.saveOrder(body.projectId, body.columnIds);
-      set.status = 200;
-    },
-    {
-      auth: true,
-      body: SaveColumnPositions.body,
-      detail: {
-        operationId: "putColumnsPositions",
-        tags: ["Column"],
-        responses: {
-          200: { description: "Column positions saved successfully" },
         },
       },
     }

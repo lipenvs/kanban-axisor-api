@@ -36,17 +36,9 @@ export const UpdateTask = {
     assigneeId: z.uuid().nullable().optional(),
     description: z.string().optional(),
     dueDate: z.coerce.date().nullable().optional(),
-    order: z.string().optional(),
+    order: z.number().optional(),
   }),
   response: TaskSchema,
-}
-
-export const ReorderTask = {
-  body: z.object({
-    activeId: z.uuid(),
-    overId: z.uuid().optional(),
-    columnId: z.uuid().optional(),
-  }),
 }
 
 export const DeleteTask = {
