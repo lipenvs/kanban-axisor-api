@@ -4,7 +4,6 @@
   "scripts": {
     "test": "bun --env-file .env.test.local --bun vitest run",
     "test:migrate": "bun --env-file .env.test.local --bun drizzle-kit migrate",
-    "test:coverage": "dotenv -e .env.test.local -- vitest run --coverage",
     "db:generate": "bun --env-file .env --bun drizzle-kit generate",
     "db:migrate": "bun --env-file .env --bun drizzle-kit migrate",
     "db:studio": "bun --env-file .env --bun drizzle-kit studio",
@@ -12,14 +11,12 @@
     "dev": "bun --watch src/server.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.994.0",
     "@elysiajs/cors": "^1.4.1",
     "@elysiajs/openapi": "^1.4.14",
     "@elysiajs/opentelemetry": "^1.4.10",
     "@opentelemetry/exporter-trace-otlp-proto": "^0.212.0",
     "@opentelemetry/sdk-trace-node": "^2.5.1",
     "@react-email/components": "^1.0.7",
-    "argon2": "^0.44.0",
     "better-auth": "^1.4.18",
     "bullmq": "^5.69.3",
     "drizzle-orm": "^0.45.1",
@@ -31,7 +28,6 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "resend": "^6.9.2",
-    "uuid": "^13.0.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
@@ -40,9 +36,7 @@
     "@types/pg": "^8.16.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
-    "@vitest/coverage-v8": "4.0.18",
     "bun-types": "latest",
-    "dotenv-cli": "^11.0.0",
     "drizzle-kit": "^0.31.9",
     "vitest": "^4.0.18"
   },

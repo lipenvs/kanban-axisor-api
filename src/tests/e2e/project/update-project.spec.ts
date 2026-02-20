@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { makeUser } from '../../factories/make-user'
+import { randomUUIDv7 } from 'bun'
 import { makeProject } from '../../factories/make-project'
 import { app } from '../../../app'
 import { eq } from 'drizzle-orm'
@@ -9,7 +10,7 @@ import { project } from '../../../database/schema'
 describe('Update project', () => {
   it('should update a project', async () => {
     const { cookie, userId } = await makeUser()
-    const projectName = crypto.randomUUID()
+    const projectName = randomUUIDv7()
     const projectCreated = await makeProject(userId, projectName)
 
     const response = await app.handle(

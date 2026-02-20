@@ -2,12 +2,13 @@ import { describe, expect, it } from "vitest";
 import { makeUser } from "../../factories/make-user";
 import { app } from "../../../app";
 import { makeProject } from "../../factories/make-project";
+import { randomUUIDv7 } from "bun";
 
 describe('Get Projects', () => {
   it('should get projects', async () => {
     const { cookie, userId } = await makeUser()
 
-    const projectName = crypto.randomUUID();
+    const projectName = randomUUIDv7();
     await makeProject(userId, projectName);
 
     const response = await app.handle(

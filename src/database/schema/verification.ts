@@ -1,5 +1,5 @@
 import { pgTable, text, timestamp, index, uuid } from "drizzle-orm/pg-core";
-import { v7 as randomUUIDv7 } from "uuid";
+import { randomUUIDv7 } from "bun";
 
 export const verification = pgTable(
   "verification",

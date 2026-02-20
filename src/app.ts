@@ -32,9 +32,9 @@ export const app = new Elysia()
       spanProcessors: [
         new BatchSpanProcessor(
           new OTLPTraceExporter({
-            url: `${process.env.OTEL_EXPORTER_OTLP_ENDPOINT}/v1/traces`,
+            url: `${Bun.env.OTEL_EXPORTER_OTLP_ENDPOINT}/v1/traces`,
             headers: {
-              Authorization: process.env.OTEL_EXPORTER_OTLP_HEADERS?.replace('Authorization=', '') ?? '',
+              Authorization: Bun.env.OTEL_EXPORTER_OTLP_HEADERS?.replace('Authorization=', '') ?? '',
             },
           })
         ),
