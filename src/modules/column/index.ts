@@ -1,32 +1,10 @@
 import { Elysia } from "elysia";
 import { authPlugin } from "../better-auth";
 import { ColumnService } from "./service";
-import { CreateColumn, GetColumns, UpdateColumn, SaveColumnPositions, DeleteColumn, GetKanbanBoard } from "./model";
+import { CreateColumn, UpdateColumn, SaveColumnPositions, DeleteColumn, GetKanbanBoard } from "./model";
 
 export const columnController = new Elysia({ prefix: "/columns" })
   .use(authPlugin)
-  .get(
-    "/kanban",
-    async ({ query, set }) => {
-      const kanban = await ColumnService.getKanbanBoard(query.projectId);
-      set.status = 200;
-      return kanban;
-    },
-    {
-      auth: true,
-      query: GetKanbanBoard.query,
-      response: {
-        200: GetKanbanBoard.response,
-      },
-      detail: {
-        operationId: "getColumnsKanban",
-        tags: ["Column"],
-        responses: {
-          200: { description: "Kanban board fetched successfully" },
-        },
-      },
-    }
-  )
   .post(
     "/",
     async ({ body, set }) => {
@@ -52,21 +30,21 @@ export const columnController = new Elysia({ prefix: "/columns" })
   .get(
     "/",
     async ({ query, set }) => {
-      const columns = await ColumnService.getAll(query.projectId);
+      const kanban = await ColumnService.getKanbanBoard(query.projectId);
       set.status = 200;
-      return { columns };
+      return kanban;
     },
     {
       auth: true,
-      query: GetColumns.query,
+      query: GetKanbanBoard.query,
       response: {
-        200: GetColumns.response,
+        200: GetKanbanBoard.response,
       },
       detail: {
-        operationId: "getColumns",
+        operationId: "getColumnsKanban",
         tags: ["Column"],
         responses: {
-          200: { description: "Columns fetched successfully" },
+          200: { description: "Kanban board fetched successfully" },
         },
       },
     }

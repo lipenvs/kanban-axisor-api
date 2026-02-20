@@ -15,15 +15,6 @@ export const CreateColumn = {
   response: Column
 }
 
-export const GetColumns = {
-  query: z.object({
-    projectId: z.uuid(),
-  }),
-  response: z.object({
-    columns: z.array(Column),
-  }),
-}
-
 export const UpdateColumn = {
   params: z.object({
     id: z.string(),

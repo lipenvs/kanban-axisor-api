@@ -26,10 +26,6 @@ export abstract class ColumnService {
     return created;
   }
 
-  static async getAll(projectId: string) {
-    return db.select().from(column).where(eq(column.projectId, projectId)).orderBy(asc(column.order));
-  }
-
   static async update(id: string, updates: { title?: string }) {
     const [updated] = await db.update(column).set(updates).where(eq(column.id, id)).returning();
     return updated;
