@@ -59,6 +59,7 @@ export const KanbanCard = z.object({
     name: z.string(),
     image: z.string().nullable(),
   }).nullable().optional(),
+  attachmentCount: z.number(),
 })
 
 export const KanbanColumn = z.object({
