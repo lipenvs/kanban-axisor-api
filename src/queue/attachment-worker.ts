@@ -6,18 +6,49 @@ import { env } from "../env";
 import { s3 } from "../utils/s3";
 import { AttachmentScanJob } from "./index";
 import { attachmentScan } from "../utils/attachmentScan";
+import { broadcastToUser, broadcastToTask } from "../websocket";
 
 const worker = new Worker<AttachmentScanJob>(
   "attachment-scan",
   async (job: Job<AttachmentScanJob>) => {
-    const { attachmentId } = job.data;
+    const { attachmentId, taskId, userId } = job.data;
 
     const [record] = await db.select().from(attachment).where(eq(attachment.id, attachmentId));
     if (!record) return;
 
     await db.update(attachment).set({ status: "scanning" }).where(eq(attachment.id, attachmentId));
 
+    if (userId) {
+      broadcastToUser(userId, "attachment:scanning", {
+        attachmentId,
+        taskId,
+        fileName: record.fileName,
+      });
+    }
+    broadcastToTask(taskId, "attachment:scanning", {
+      attachmentId,
+      taskId,
+      fileName: record.fileName,
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+
     const status = await attachmentScan(record.fileName);
+
+    if (userId) {
+      broadcastToUser(userId, "attachment:saving", {
+        attachmentId,
+        taskId,
+        fileName: record.fileName,
+      });
+    }
+    broadcastToTask(taskId, "attachment:saving", {
+      attachmentId,
+      taskId,
+      fileName: record.fileName,
+    });
+
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     if (status === "infected") {
       try {
@@ -28,6 +59,28 @@ const worker = new Worker<AttachmentScanJob>(
     }
 
     await db.update(attachment).set({ status }).where(eq(attachment.id, attachmentId));
+
+    const attachments = await db
+      .select()
+      .from(attachment)
+      .where(eq(attachment.taskId, taskId));
+
+    if (userId) {
+      broadcastToUser(userId, "attachment:completed", {
+        attachmentId,
+        taskId,
+        fileName: record.fileName,
+        status,
+        attachmentCount: attachments.length,
+      });
+    }
+    broadcastToTask(taskId, "attachment:completed", {
+      attachmentId,
+      taskId,
+      fileName: record.fileName,
+      status,
+      attachmentCount: attachments.length,
+    });
 
     if (status === "error") {
       throw new Error("Simulated scan failure");

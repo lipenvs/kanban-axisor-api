@@ -7,6 +7,7 @@ import { labelController } from './modules/label';
 import { columnController } from './modules/column';
 import { taskController } from './modules/task';
 import { attachmentController } from './modules/attachment';
+import { websocketController } from './websocket';
 import { env } from './env';
 import { toJSONSchema, type ZodType } from 'zod';
 import { opentelemetry } from '@elysiajs/opentelemetry';
@@ -65,6 +66,7 @@ export const app = new Elysia()
     })
   )
   .use(authPlugin)
+  .use(websocketController)
   .use(projectController)
   .use(labelController)
   .use(columnController)

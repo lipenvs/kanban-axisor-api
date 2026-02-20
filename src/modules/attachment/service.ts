@@ -5,7 +5,7 @@ import { s3 } from "../../utils/s3";
 import { attachmentQueue } from "../../queue";
 
 export abstract class AttachmentService {
-  static async upload(taskId: string, file: File) {
+  static async upload(taskId: string, file: File, userId?: string) {
     const storageKey = `${taskId}/${crypto.randomUUID()}-${file.name}`;
 
     await s3.write(storageKey, file);
@@ -22,7 +22,7 @@ export abstract class AttachmentService {
       })
       .returning();
 
-    await attachmentQueue.add("scan", { attachmentId: created.id });
+    await attachmentQueue.add("scan", { attachmentId: created.id, taskId, userId });
 
     return created;
   }

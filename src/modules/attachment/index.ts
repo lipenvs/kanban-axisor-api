@@ -13,14 +13,15 @@ export const attachmentController = new Elysia({ prefix: "/attachments" })
   .use(authPlugin)
   .post(
     "/upload/:taskId",
-    async ({ params, body, set }) => {
+    async ({ params, body, set, data }) => {
       const file = body.file;
       if (!file.type.includes("pdf")) {
         set.status = 400;
         return { error: "Only PDF files are allowed" };
       }
 
-      const created = await AttachmentService.upload(params.taskId, file);
+      const userId = data.session?.user?.id;
+      const created = await AttachmentService.upload(params.taskId, file, userId);
       set.status = 201;
       return created;
     },
