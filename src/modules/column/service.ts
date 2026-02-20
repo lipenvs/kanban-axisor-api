@@ -1,10 +1,9 @@
-import { eq, asc, desc, sql, inArray } from "drizzle-orm";
+import { eq, asc, desc } from "drizzle-orm";
 import { db } from "../../database/client";
 import { column } from "../../database/schema/column";
 import { task } from "../../database/schema/task";
 import { label } from "../../database/schema/label";
 import { user } from "../../database/schema/user";
-import { attachment } from "../../database/schema/attachment";
 import { generateKeyBetween } from "fractional-indexing";
 
 export abstract class ColumnService {
@@ -97,33 +96,13 @@ export abstract class ColumnService {
           .leftJoin(label, eq(task.labelId, label.id))
           .leftJoin(user, eq(task.assigneeId, user.id))
           .where(eq(task.columnId, col.id))
+          // We order by task.order lexicographically as it is a string based on the schema
           .orderBy(asc(task.order));
-
-        const taskIds = tasks.map((t) => t.id);
-        const attachmentCounts = taskIds.length > 0
-          ? await db
-              .select({
-                taskId: attachment.taskId,
-                count: sql<number>`count(*)::int`.as("count"),
-              })
-              .from(attachment)
-              .where(inArray(attachment.taskId, taskIds))
-              .groupBy(attachment.taskId)
-          : [];
-
-        const attachmentCountMap = new Map(
-          attachmentCounts.map((ac) => [ac.taskId, ac.count])
-        );
-
-        const tasksWithAttachmentCount = tasks.map((t) => ({
-          ...t,
-          attachmentCount: attachmentCountMap.get(t.id) ?? 0,
-        }));
 
         return {
           id: col.id,
           title: col.title,
-          cards: tasksWithAttachmentCount,
+          cards: tasks,
         };
       })
     );

@@ -3,8 +3,6 @@ import { env } from "../env";
 
 export interface AttachmentScanJob {
   attachmentId: string;
-  taskId: string;
-  userId?: string;
 }
 
 export const attachmentQueue = new Queue<AttachmentScanJob>("attachment-scan", {
