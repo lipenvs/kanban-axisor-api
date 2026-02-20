@@ -7,8 +7,8 @@ import { db } from '../../../database/client'
 import { eq, asc } from 'drizzle-orm'
 import { column } from '../../../database/schema'
 
-describe('Reorder Columns', () => {
-  it('should reorder columns', async () => {
+describe('Save Column Positions', () => {
+  it('should save column positions (new order: col2, col1, col3)', async () => {
     const { cookie, userId } = await makeUser()
     const project = await makeProject(userId)
 
@@ -17,15 +17,15 @@ describe('Reorder Columns', () => {
     const column3 = await makeColumn(project.id, 2)
 
     const response = await app.handle(
-      new Request('http://localhost/columns/reorder', {
-        method: 'POST',
+      new Request('http://localhost/columns/positions', {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Cookie: cookie,
         },
         body: JSON.stringify({
-          activeId: column1.id,
-          overId: column3.id,
+          projectId: project.id,
+          columnIds: [column2.id, column1.id, column3.id],
         }),
       })
     )
@@ -39,18 +39,12 @@ describe('Reorder Columns', () => {
       .orderBy(asc(column.order))
 
     expect(columns).toHaveLength(3)
-
     expect(columns[0].id).toBe(column2.id)
-    expect(columns[0].order).toBe(0)
-
-    expect(columns[1].id).toBe(column3.id)
-    expect(columns[1].order).toBe(1)
-
-    expect(columns[2].id).toBe(column1.id)
-    expect(columns[2].order).toBe(2)
+    expect(columns[1].id).toBe(column1.id)
+    expect(columns[2].id).toBe(column3.id)
   })
 
-  it('should reorder columns backwards', async () => {
+  it('should save column positions (new order: col3, col1, col2)', async () => {
     const { cookie, userId } = await makeUser()
     const project = await makeProject(userId)
 
@@ -59,15 +53,15 @@ describe('Reorder Columns', () => {
     const column3 = await makeColumn(project.id, 2)
 
     const response = await app.handle(
-      new Request('http://localhost/columns/reorder', {
-        method: 'POST',
+      new Request('http://localhost/columns/positions', {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Cookie: cookie,
         },
         body: JSON.stringify({
-          activeId: column3.id,
-          overId: column1.id,
+          projectId: project.id,
+          columnIds: [column3.id, column1.id, column2.id],
         }),
       })
     )
@@ -81,14 +75,8 @@ describe('Reorder Columns', () => {
       .orderBy(asc(column.order))
 
     expect(columns).toHaveLength(3)
-
     expect(columns[0].id).toBe(column3.id)
-    expect(columns[0].order).toBe(0)
-    
     expect(columns[1].id).toBe(column1.id)
-    expect(columns[1].order).toBe(1)
-
     expect(columns[2].id).toBe(column2.id)
-    expect(columns[2].order).toBe(2)
   })
 })

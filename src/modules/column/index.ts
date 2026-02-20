@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 import { authPlugin } from "../better-auth";
 import { ColumnService } from "./service";
-import { CreateColumn, GetColumns, UpdateColumn, ReorderColumn, DeleteColumn, GetKanbanBoard } from "./model";
+import { CreateColumn, GetColumns, UpdateColumn, SaveColumnPositions, DeleteColumn, GetKanbanBoard } from "./model";
 
 export const columnController = new Elysia({ prefix: "/columns" })
   .use(authPlugin)
@@ -68,19 +68,19 @@ export const columnController = new Elysia({ prefix: "/columns" })
       },
     }
   )
-  .post(
-    "/reorder",
+  .put(
+    "/positions",
     async ({ body, set }) => {
-      await ColumnService.reorder(body.activeId, body.overId);
+      await ColumnService.saveOrder(body.projectId, body.columnIds);
       set.status = 200;
     },
     {
       auth: true,
-      body: ReorderColumn.body,
+      body: SaveColumnPositions.body,
       detail: {
         tags: ["Column"],
         responses: {
-          200: { description: "Columns reordered successfully" },
+          200: { description: "Column positions saved successfully" },
         },
       },
     }

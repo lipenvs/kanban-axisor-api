@@ -41,6 +41,13 @@ export const ReorderColumn = {
   }),
 }
 
+export const SaveColumnPositions = {
+  body: z.object({
+    projectId: z.uuid(),
+    columnIds: z.array(z.uuid()).min(1),
+  }),
+}
+
 export const DeleteColumn = {
   params: z.object({
     id: z.string(),

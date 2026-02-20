@@ -1,4 +1,4 @@
-import { eq, asc, desc, and, lt, sql } from "drizzle-orm";
+import { eq, asc, desc } from "drizzle-orm";
 import { db } from "../../database/client";
 import { column } from "../../database/schema/column";
 import { task } from "../../database/schema/task";
@@ -35,44 +35,29 @@ export abstract class ColumnService {
     return updated;
   }
 
-  static async reorder(activeId: string, overId?: string) {
+  /** Salva a posição das colunas a partir da lista ordenada de ids (índice = ordem). */
+  static async saveOrder(projectId: string, columnIds: string[]) {
     return db.transaction(async (tx) => {
-      const [active] = await tx.select().from(column).where(eq(column.id, activeId));
-      if (!active) throw new Error("Column not found");
+      const existing = await tx
+        .select({ id: column.id })
+        .from(column)
+        .where(eq(column.projectId, projectId));
 
-      let newOrder: string;
-
-      if (!overId) {
-        const [lastColumn] = await tx
-          .select({ order: column.order })
-          .from(column)
-          .where(eq(column.projectId, active.projectId))
-          .orderBy(desc(column.order))
-          .limit(1);
-
-        newOrder = generateKeyBetween(lastColumn?.order ?? null, null);
-      } else {
-        const [over] = await tx.select().from(column).where(eq(column.id, overId));
-        if (!over) throw new Error("Over column not found");
-
-        const [prev] = await tx
-          .select({ order: column.order })
-          .from(column)
-          .where(and(
-            eq(column.projectId, active.projectId),
-            lt(column.order, over.order),
-            sql`${column.id} != ${activeId}`,
-          ))
-          .orderBy(desc(column.order))
-          .limit(1);
-
-        newOrder = generateKeyBetween(prev?.order ?? null, over.order);
+      const existingIds = new Set(existing.map((c) => c.id));
+      const validIds = columnIds.filter((id) => existingIds.has(id));
+      if (validIds.length !== columnIds.length) {
+        throw new Error("Some column ids do not belong to this project");
       }
 
-      await tx.update(column).set({
-        order: newOrder,
-        updatedAt: new Date(),
-      }).where(eq(column.id, activeId));
+      let prevOrder: string | null = null;
+      for (const columnId of validIds) {
+        const order = generateKeyBetween(prevOrder, null);
+        await tx
+          .update(column)
+          .set({ order, updatedAt: new Date() })
+          .where(eq(column.id, columnId));
+        prevOrder = order;
+      }
     });
   }
 
