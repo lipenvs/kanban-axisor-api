@@ -14,7 +14,7 @@ export abstract class ColumnService {
     .orderBy(desc(column.order))
     .limit(1);
 
-  const order = (lastColumn?.order ?? 0) + 1000;
+  const order = (lastColumn?.order ?? 0) + 1;
 
   const [created] = await db.insert(column).values({
     title,
@@ -73,6 +73,19 @@ static async getColumnsWithTasks(projectId: string) {
     const [updated] = await db.update(column).set(updates).where(eq(column.id, id)).returning();
     return updated;
   }
+
+static async reorder(items: { id: string; order: number }[]) {
+  await db.transaction(async (tx) => {
+    await Promise.all(
+      items.map((item) =>
+        tx
+          .update(column)
+          .set({ order: item.order, updatedAt: new Date() })
+          .where(eq(column.id, item.id))
+      )
+    );
+  });
+}
 
   static async delete(id: string) {
     await db.delete(column).where(eq(column.id, id));

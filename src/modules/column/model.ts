@@ -25,10 +25,12 @@ export const UpdateColumn = {
   response: Column,
 }
 
-export const ReorderColumn = {
+export const ReorderColumns = {
   body: z.object({
-    activeId: z.uuid(),
-    overId: z.uuid().optional(),
+    columns: z.array(z.object({
+      id: z.uuid(),
+      order: z.number(),
+    })),
   }),
 }
 
@@ -71,3 +73,4 @@ export const GetColumnsWithTasks = {
   }),
   response: z.array(KanbanColumn),
 }
+

@@ -29,6 +29,13 @@
       "when": 1771618128814,
       "tag": "0003_broad_tusk",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1771622431731,
+      "tag": "0004_flat_hannibal_king",
+      "breakpoints": true
     }
   ]
 }

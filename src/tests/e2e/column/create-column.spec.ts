@@ -35,7 +35,7 @@ describe('Create Column', () => {
       id: expect.any(String),
       title,
       projectId: project.id,
-      order: 1000
+      order: 1
     })
   })
 })

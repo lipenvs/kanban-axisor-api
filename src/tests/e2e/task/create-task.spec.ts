@@ -44,7 +44,7 @@ describe('Create Task', () => {
       dueDate: null,
       createdAt: expect.any(String),
       updatedAt: expect.any(String),
-      order: 1000
+      order: 1
     })
   })
 })

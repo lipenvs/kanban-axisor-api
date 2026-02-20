@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 import { authPlugin } from "../better-auth";
 import { TaskService } from "./service";
-import { CreateTask, GetTasks, UpdateTask, DeleteTask } from "./model";
+import { CreateTask, GetTasks, UpdateTask, DeleteTask, ReorderTasks } from "./model";
 
 export const taskController = new Elysia({ prefix: "/tasks" })
   .use(authPlugin)
@@ -72,6 +72,24 @@ export const taskController = new Elysia({ prefix: "/tasks" })
       },
     }
   )
+  .patch(
+  "/reorder",
+  async ({ body, set }) => {
+    await TaskService.reorder(body.tasks);
+    set.status = 200;
+  },
+  {
+    auth: true,
+    body: ReorderTasks.body,
+    detail: {
+      operationId: "patchTasksReorder",
+      tags: ["Task"],
+      responses: {
+        200: { description: "Tasks reordered successfully" },
+      },
+    },
+  }
+)
   .delete(
     "/:id",
     async ({ params, set }) => {

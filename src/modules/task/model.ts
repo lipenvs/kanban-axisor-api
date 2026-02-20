@@ -41,6 +41,16 @@ export const UpdateTask = {
   response: TaskSchema,
 }
 
+export const ReorderTasks = {
+  body: z.object({
+    tasks: z.array(z.object({
+      id: z.uuid(),
+      columnId: z.uuid(),
+      order: z.number(),
+    })),
+  }),
+}
+
 export const DeleteTask = {
   params: z.object({
     id: z.string(),

@@ -9,7 +9,7 @@ export async function makeColumn(projectId: string, order?: number, title?: stri
   const result = await db.insert(column).values({
     title: title ?? faker.lorem.word(2),
     projectId,
-    order: order ?? (lastColumn?.order ?? 0) + 1000,
+    order: order ?? (lastColumn?.order ?? 0) + 1,
   }).returning()
 
   return result[0]

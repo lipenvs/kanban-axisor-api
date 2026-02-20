@@ -10,7 +10,7 @@ export async function makeTask(columnId: string, labelId: string, order?: number
     title: title ?? faker.lorem.word(3),
     columnId,
     labelId,
-    order: order ?? (lastTask?.order ?? 0) + 1000,
+    order: order ?? (lastTask?.order ?? 0) + 1,
     description: faker.lorem.sentence(),
     dueDate: faker.date.future(),
   }).returning()
