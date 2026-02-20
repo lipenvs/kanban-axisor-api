@@ -3,7 +3,6 @@ import { app } from '../../../app'
 import { makeUser } from '../../factories/make-user'
 import { makeProject } from '../../factories/make-project'
 import { makeLabel } from '../../factories/make-label'
-import { randomUUIDv7 } from 'bun'
 import { eq } from 'drizzle-orm'
 import { db } from '../../../database/client'
 import { label } from '../../../database/schema'
@@ -11,7 +10,7 @@ import { label } from '../../../database/schema'
 describe('Delete label', () => {
   it('should delete a label', async () => {
     const { cookie, userId } = await makeUser()
-    const projectName = randomUUIDv7()
+    const projectName = crypto.randomUUID()
     const projectCreated = await makeProject(userId, projectName)
     const labelCreated = await makeLabel(projectCreated.id)
 

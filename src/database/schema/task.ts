@@ -1,4 +1,4 @@
-import { randomUUIDv7 } from "bun";
+import { v7 as randomUUIDv7 } from "uuid";
 import { pgTable, text, uuid, timestamp } from "drizzle-orm/pg-core";
 import { column } from "./column";
 import { label } from "./label";
