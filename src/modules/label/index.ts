@@ -19,6 +19,7 @@ export const labelController = new Elysia({ prefix: "/labels" })
         201: CreateLabel.response,
       },
       detail: {
+        operationId: "postLabels",
         description: "Create a new label",
         tags: ["Label"],
         responses: {
@@ -41,6 +42,7 @@ export const labelController = new Elysia({ prefix: "/labels" })
         200: GetLabels.response,
       },
       detail: {
+        operationId: "getLabelsByProjectId",
         description: "Get all labels",
         tags: ["Label"],
         responses: {
@@ -59,6 +61,7 @@ export const labelController = new Elysia({ prefix: "/labels" })
       params: UpdateLabel.params,
       body: UpdateLabel.body,
       detail: {
+        operationId: "putLabelsById",
         description: "Update a label",
         tags: ["Label"],
         responses: {
@@ -76,6 +79,7 @@ export const labelController = new Elysia({ prefix: "/labels" })
     {
       params: UpdateLabel.params,
       detail: {
+        operationId: "deleteLabelsById",
         description: "Delete label",
         tags: ["Label"],
         responses: {

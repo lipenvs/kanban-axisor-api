@@ -19,6 +19,7 @@ export const projectController = new Elysia({ prefix: "/projects" })
         201: CreateProject.response,
       },
       detail: {
+        operationId: "postProjects",
         description: "Create a new project",
         tags: ["Project"],
         responses: {
@@ -40,6 +41,7 @@ export const projectController = new Elysia({ prefix: "/projects" })
         200: GetProjects.response,
       },
       detail: {
+        operationId: "getProjects",
         description: "Get all projects",
         tags: ["Project"],
         responses: {
@@ -58,6 +60,7 @@ export const projectController = new Elysia({ prefix: "/projects" })
       params: UpdateProject.params,
       body: UpdateProject.body,
       detail: {
+        operationId: "putProjectsById",
         description: "Update a project",
         tags: ["Project"],
         responses: {
@@ -75,6 +78,7 @@ export const projectController = new Elysia({ prefix: "/projects" })
     {
       params: DeleteProject.params,
       detail: {
+        operationId: "deleteProjectsById",
         description: "Delete project",
         tags: ["Project"],
         responses: {

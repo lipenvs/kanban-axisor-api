@@ -19,6 +19,7 @@ export const taskController = new Elysia({ prefix: "/tasks" })
         201: CreateTask.response,
       },
       detail: {
+        operationId: "postTasks",
         tags: ["Task"],
         responses: {
           201: { description: "Task created successfully" },
@@ -40,6 +41,7 @@ export const taskController = new Elysia({ prefix: "/tasks" })
         200: GetTasks.response,
       },
       detail: {
+        operationId: "getTasks",
         tags: ["Task"],
         responses: {
           200: { description: "Tasks fetched successfully" },
@@ -62,6 +64,7 @@ export const taskController = new Elysia({ prefix: "/tasks" })
         200: UpdateTask.response,
       },
       detail: {
+        operationId: "putTasksById",
         tags: ["Task"],
         responses: {
           200: { description: "Task updated successfully" },
@@ -79,6 +82,7 @@ export const taskController = new Elysia({ prefix: "/tasks" })
       auth: true,
       body: ReorderTask.body,
       detail: {
+        operationId: "postTasksReorder",
         tags: ["Task"],
         responses: {
           200: { description: "Tasks reordered successfully" },
@@ -96,6 +100,7 @@ export const taskController = new Elysia({ prefix: "/tasks" })
       auth: true,
       params: DeleteTask.params,
       detail: {
+        operationId: "deleteTasksById",
         tags: ["Task"],
         responses: {
           200: { description: "Task deleted successfully" },

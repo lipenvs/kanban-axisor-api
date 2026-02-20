@@ -16,7 +16,7 @@ import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto';
 export const app = new Elysia()
   .get('/health', () => ({ status: 'ok' }), {
     response: t.Object({ status: t.String() }),
-    detail: { hide: true },
+    detail: { operationId: 'getHealth', hide: true },
   })
   .use(
     cors({

@@ -34,6 +34,7 @@ export const attachmentController = new Elysia({ prefix: "/attachments" })
         201: UploadAttachment.response,
       },
       detail: {
+        operationId: "postAttachmentsUploadByTaskId",
         tags: ["Attachment"],
         responses: {
           201: { description: "File uploaded and queued for processing" },
@@ -55,6 +56,7 @@ export const attachmentController = new Elysia({ prefix: "/attachments" })
         200: GetAttachments.response,
       },
       detail: {
+        operationId: "getAttachmentsByTaskId",
         tags: ["Attachment"],
         responses: {
           200: { description: "Attachments fetched successfully" },
@@ -81,6 +83,7 @@ export const attachmentController = new Elysia({ prefix: "/attachments" })
         200: GetAttachmentsByTasks.response,
       },
       detail: {
+        operationId: "getAttachmentsByTasks",
         tags: ["Attachment"],
         responses: {
           200: { description: "Attachments for multiple tasks" },
@@ -106,6 +109,7 @@ export const attachmentController = new Elysia({ prefix: "/attachments" })
         404: t.Object({ error: t.String() }), // Fallback for error or use Zod if we defined Error schema
       },
       detail: {
+        operationId: "getAttachmentsDownloadById",
         tags: ["Attachment"],
         responses: {
           200: { description: "Presigned download URL" },
@@ -127,6 +131,7 @@ export const attachmentController = new Elysia({ prefix: "/attachments" })
         200: DeleteAttachment.response,
       },
       detail: {
+        operationId: "deleteAttachmentsById",
         tags: ["Attachment"],
         responses: {
           200: { description: "Attachment deleted" },

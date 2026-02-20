@@ -19,6 +19,7 @@ export const columnController = new Elysia({ prefix: "/columns" })
         200: GetKanbanBoard.response,
       },
       detail: {
+        operationId: "getColumnsKanban",
         tags: ["Column"],
         responses: {
           200: { description: "Kanban board fetched successfully" },
@@ -40,6 +41,7 @@ export const columnController = new Elysia({ prefix: "/columns" })
         201: CreateColumn.response,
       },
       detail: {
+        operationId: "postColumns",
         tags: ["Column"],
         responses: {
           201: { description: "Column created successfully" },
@@ -61,6 +63,7 @@ export const columnController = new Elysia({ prefix: "/columns" })
         200: GetColumns.response,
       },
       detail: {
+        operationId: "getColumns",
         tags: ["Column"],
         responses: {
           200: { description: "Columns fetched successfully" },
@@ -78,6 +81,7 @@ export const columnController = new Elysia({ prefix: "/columns" })
       auth: true,
       body: SaveColumnPositions.body,
       detail: {
+        operationId: "putColumnsPositions",
         tags: ["Column"],
         responses: {
           200: { description: "Column positions saved successfully" },
@@ -100,6 +104,7 @@ export const columnController = new Elysia({ prefix: "/columns" })
         200: UpdateColumn.response,
       },
       detail: {
+        operationId: "putColumnsById",
         tags: ["Column"],
         responses: {
           200: { description: "Column updated successfully" },
@@ -117,6 +122,7 @@ export const columnController = new Elysia({ prefix: "/columns" })
       auth: true,
       params: DeleteColumn.params,
       detail: {
+        operationId: "deleteColumnsById",
         tags: ["Column"],
         responses: {
           200: { description: "Column deleted successfully" },
