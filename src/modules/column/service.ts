@@ -25,16 +25,7 @@ export abstract class ColumnService {
   return created;
 }
 
-  static async update(id: string, updates: { title?: string }) {
-    const [updated] = await db.update(column).set(updates).where(eq(column.id, id)).returning();
-    return updated;
-  }
-
-  static async delete(id: string) {
-    await db.delete(column).where(eq(column.id, id));
-  }
-
-  static async getKanbanBoard(projectId: string) {
+static async getColumnsWithTasks(projectId: string) {
     const columns = await db
       .select()
       .from(column)
@@ -65,7 +56,6 @@ export abstract class ColumnService {
           .leftJoin(label, eq(task.labelId, label.id))
           .leftJoin(user, eq(task.assigneeId, user.id))
           .where(eq(task.columnId, col.id))
-          // We order by task.order lexicographically as it is a string based on the schema
           .orderBy(asc(task.order));
 
         return {
@@ -78,4 +68,15 @@ export abstract class ColumnService {
 
     return columnsWithTasks;
   }
+
+  static async update(id: string, updates: { title?: string }) {
+    const [updated] = await db.update(column).set(updates).where(eq(column.id, id)).returning();
+    return updated;
+  }
+
+  static async delete(id: string) {
+    await db.delete(column).where(eq(column.id, id));
+  }
+
+  
 }

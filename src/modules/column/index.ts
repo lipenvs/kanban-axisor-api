@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 import { authPlugin } from "../better-auth";
 import { ColumnService } from "./service";
-import { CreateColumn, UpdateColumn, DeleteColumn, GetKanbanBoard } from "./model";
+import { CreateColumn, UpdateColumn, DeleteColumn, GetColumnsWithTasks } from "./model";
 
 export const columnController = new Elysia({ prefix: "/columns" })
   .use(authPlugin)
@@ -30,18 +30,18 @@ export const columnController = new Elysia({ prefix: "/columns" })
   .get(
     "/",
     async ({ query, set }) => {
-      const kanban = await ColumnService.getKanbanBoard(query.projectId);
+      const kanban = await ColumnService.getColumnsWithTasks(query.projectId);
       set.status = 200;
       return kanban;
     },
     {
       auth: true,
-      query: GetKanbanBoard.query,
+      query: GetColumnsWithTasks.query,
       response: {
-        200: GetKanbanBoard.response,
+        200: GetColumnsWithTasks.response,
       },
       detail: {
-        operationId: "getColumnsKanban",
+        operationId: "getColumnsWithTasks",
         tags: ["Column"],
         responses: {
           200: { description: "Kanban board fetched successfully" },

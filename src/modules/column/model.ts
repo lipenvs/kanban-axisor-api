@@ -65,7 +65,7 @@ export const KanbanColumn = z.object({
   cards: z.array(KanbanCard),
 })
 
-export const GetKanbanBoard = {
+export const GetColumnsWithTasks = {
   query: z.object({
     projectId: z.uuid(),
   }),
