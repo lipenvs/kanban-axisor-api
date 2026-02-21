@@ -7,7 +7,6 @@ export const wsController = new Elysia()
     open(ws) {
       const projectId = ws.data.query.projectId;
       if (projectId) {
-        console.log('Cliente conectado no backend, projectId:', projectId);
         wsService.register(projectId, ws);
       }
     },

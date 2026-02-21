@@ -8,11 +8,9 @@ const subscriber = new RedisClient(env.REDIS_URL);
 
 await subscriber.subscribe('notifications', (message) => {
   const payload = JSON.parse(message);
-  console.log('Redis recebeu, projectId:', payload.projectId, 'taskId:', payload.taskId);
   
   const projectClients = clients.get(payload.projectId);
   if (projectClients) {
-    console.log(`Enviando para ${projectClients.size} clientes no projeto ${payload.projectId}`);
     for (const ws of projectClients) {
       ws.send(JSON.stringify(payload));
     }
