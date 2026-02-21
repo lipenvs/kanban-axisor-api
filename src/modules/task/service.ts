@@ -1,4 +1,4 @@
-import { eq, asc, desc, and, lt, sql } from "drizzle-orm";
+import { eq, asc, desc } from "drizzle-orm";
 import { db } from "../../database/client";
 import { task } from "../../database/schema/task";
 import { column } from "../../database/schema/column";

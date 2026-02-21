@@ -16,15 +16,6 @@ export const CreateTask = {
   response: TaskSchema
 }
 
-export const GetTasks = {
-  query: z.object({
-    projectId: z.uuid(),
-  }),
-  response: z.object({
-    tasks: z.array(TaskSchema.omit({ createdAt: true, updatedAt: true })),
-  }),
-}
-
 export const UpdateTask = {
   params: z.object({
     id: z.string(),

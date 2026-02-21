@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
 import { authPlugin } from "../better-auth";
 import { TaskService } from "./service";
-import { CreateTask, GetTasks, UpdateTask, DeleteTask, ReorderTasks } from "./model";
+import { CreateTask, UpdateTask, DeleteTask, ReorderTasks } from "./model";
 
 export const taskController = new Elysia({ prefix: "/tasks" })
   .use(authPlugin)
@@ -23,28 +23,6 @@ export const taskController = new Elysia({ prefix: "/tasks" })
         tags: ["Task"],
         responses: {
           201: { description: "Task created successfully" },
-        },
-      },
-    }
-  )
-  .get(
-    "/",
-    async ({ query, set }) => {
-      const tasks = await TaskService.getAllByProjectId(query.projectId);
-      set.status = 200;
-      return { tasks };
-    },
-    {
-      auth: true,
-      query: GetTasks.query,
-      response: {
-        200: GetTasks.response,
-      },
-      detail: {
-        operationId: "getTasks",
-        tags: ["Task"],
-        responses: {
-          200: { description: "Tasks fetched successfully" },
         },
       },
     }
