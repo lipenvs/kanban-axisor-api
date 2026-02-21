@@ -76,10 +76,10 @@ flowchart TB
 
 ## Pré-requisitos
 
-- [Bun](https://bun.sh/)
-- PostgreSQL 18
-- Redis 7
-- MinIO (ou outro S3-compatible)
+- [Bun](https://bun.sh/) — para rodar a API
+- [Docker](https://www.docker.com/) e Docker Compose — para subir PostgreSQL, Redis e MinIO
+
+Todo o resto (banco, Redis, armazenamento) é provisionado via **Docker**; não é preciso instalar PostgreSQL, Redis nem MinIO na máquina.
 
 ## Setup
 
@@ -95,10 +95,28 @@ flowchart TB
 
    - `DATABASE_URL`, `POSTGRES_*`, `BETTER_AUTH_*`, `FRONTEND_URL`
    - `RESEND_API_KEY` (Resend)
-   - `S3_*` (MinIO: user, password, endpoint, bucket)
+   - `S3_*` (MinIO: user, password, endpoint, bucket) — os mesmos valores são usados pelo `docker-compose` no serviço MinIO
    - Opcional: `OTEL_EXPORTER_OTLP_ENDPOINT` e `OTEL_EXPORTER_OTLP_HEADERS` para observabilidade
 
-3. **Banco**
+3. **Docker — subir PostgreSQL, Redis e MinIO**
+
+   No diretório da API:
+
+   ```bash
+   docker compose up -d
+   ```
+
+   O `docker-compose.yml` sobe três serviços:
+
+   | Serviço   | Imagem     | Portas        | Uso |
+   |-----------|------------|---------------|-----|
+   | **db**    | postgres:18| 5432          | Banco de dados; usa `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` do `.env`. Dados persistem no volume `pgdata`. |
+   | **redis** | redis:7    | 6379          | Pub/sub (WebSocket) e filas BullMQ. Sem senha por padrão; a API conecta em `redis://localhost:6379` (ou `REDIS_URL`). |
+   | **minio** | minio/minio| 9000 (API), 9001 (console) | Armazenamento S3-compatible. Usa `S3_ROOT_USER` e `S3_ROOT_PASSWORD` do `.env`. Console em `http://localhost:9001`. Dados no volume `minio-data`. |
+
+   O Redis não exige variáveis no compose; o MinIO usa as mesmas credenciais que você coloca em `S3_*` no `.env` para a API se conectar. Depois de subir, crie o bucket configurado em `S3_BUCKET` (pela console do MinIO ou ferramenta S3).
+
+4. **Banco**
 
    ```bash
    bun run db:generate
@@ -106,21 +124,13 @@ flowchart TB
    bun run db:seed   # opcional
    ```
 
-4. **Subir dependências com Docker**
-
-   ```bash
-   docker compose up -d
-   ```
-
-   Sobe: PostgreSQL, Redis e MinIO. MinIO console em `http://localhost:9001`.
-
 5. **Rodar a API**
 
    ```bash
    bun run dev
    ```
 
-   A API sobe em `http://localhost:3333`. Os workers BullMQ (scan e delete de anexos) sobem no mesmo processo.
+   A API sobe em `http://localhost:3333`. Os workers BullMQ (scan e delete de anexos) sobem no mesmo processo. Ela espera que os serviços do Docker (db, redis, minio) já estejam no ar.
 
 ## Scripts
 
@@ -128,6 +138,7 @@ flowchart TB
 |-----------------|------------------------------------|
 | `bun run dev`   | Servidor em modo watch              |
 | `bun run test`  | Testes (Vitest, e2e)                |
+| `bun run test:migrate` | Aplica migrations no banco de testes (usa `.env.test.local`) |
 | `db:generate`   | Gera migrations Drizzle             |
 | `db:migrate`    | Aplica migrations                   |
 | `db:studio`     | Drizzle Studio                      |
@@ -142,13 +153,20 @@ Há testes **e2e** (Vitest) cobrindo as rotas da API, **exceto as de attachment*
 - **Columns**: create, update, delete, reorder
 - **Tasks**: create, update, delete, reorder
 
-Rodar:
+**Antes de rodar os testes** é preciso ter um banco de testes e aplicar as migrations nele. As variáveis de ambiente dos testes vêm do arquivo `.env.test.local` (ex.: `DATABASE_URL` apontando para um Postgres de teste).
 
-```bash
-bun run test
-```
+1. Crie `.env.test.local` com as variáveis necessárias para o ambiente de teste (pode copiar do `.env` e alterar `DATABASE_URL` para outro banco, ou usar outro Postgres/container).
+2. Gere o banco de testes rodando as migrations:
 
-Use `.env.test.local` para variáveis de teste (ex.: `DATABASE_URL` de um banco de testes).
+   ```bash
+   bun run test:migrate
+   ```
+
+3. Rode os testes:
+
+   ```bash
+   bun run test
+   ```
 
 ## WebSockets e Redis
 
