@@ -12,6 +12,7 @@ import { toJSONSchema, type ZodType } from 'zod';
 import { opentelemetry } from '@elysiajs/opentelemetry';
 import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto';
+import { wsController } from './modules/ws';
 
 export const app = new Elysia()
   .get('/health', () => ({ status: 'ok' }), {
@@ -65,6 +66,7 @@ export const app = new Elysia()
     })
   )
   .use(authPlugin)
+  .use(wsController)
   .use(projectController)
   .use(labelController)
   .use(columnController)

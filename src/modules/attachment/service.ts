@@ -9,8 +9,6 @@ export abstract class AttachmentService {
   static async upload(taskId: string, file: File) {
     const storageKey = `${taskId}/${crypto.randomUUID()}-${file.name}`;
 
-    await s3.write(storageKey, file);
-
     const [created] = await db
       .insert(attachment)
       .values({
@@ -22,6 +20,8 @@ export abstract class AttachmentService {
         status: "pending",
       })
       .returning();
+
+    await s3.write(storageKey, file);
 
     await attachmentQueue.add("scan", { attachmentId: created.id });
 

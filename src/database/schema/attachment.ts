@@ -13,4 +13,5 @@ export const attachment = pgTable('attachment', {
   storageKey: text('storage_key').notNull(),
   status: attachmentStatusEnum('status').default('pending').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });

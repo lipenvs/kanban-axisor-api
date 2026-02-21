@@ -36,6 +36,13 @@
       "when": 1771622431731,
       "tag": "0004_flat_hannibal_king",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1771684444803,
+      "tag": "0005_true_jack_power",
+      "breakpoints": true
     }
   ]
 }

@@ -1,15 +1,8 @@
+import { createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
+import { attachment } from '../../database/schema';
 
-export const Attachment = z.object({
-  id: z.uuid(),
-  taskId: z.uuid(),
-  fileName: z.string(),
-  fileSize: z.number(),
-  fileType: z.string(),
-  storageKey: z.string(),
-  status: z.enum(['pending', 'scanning', 'clean', 'infected', 'error']),
-  createdAt: z.date().nullable().optional(),
-});
+export const AttachmentSchema = createSelectSchema(attachment)
 
 export const UploadAttachment = {
   params: z.object({
@@ -18,7 +11,7 @@ export const UploadAttachment = {
   body: z.object({
     file: z.instanceof(File),
   }),
-  response: Attachment,
+  response: AttachmentSchema,
 };
 
 export const GetAttachments = {
@@ -26,7 +19,7 @@ export const GetAttachments = {
     taskId: z.uuid(),
   }),
   response: z.object({
-    attachments: z.array(Attachment),
+    attachments: z.array(AttachmentSchema),
   }),
 };
 
@@ -35,7 +28,7 @@ export const GetAttachmentsByTasks = {
     taskIds: z.union([z.string(), z.array(z.string())]).optional(),
   }),
   response: z.object({
-    attachments: z.array(Attachment),
+    attachments: z.array(AttachmentSchema),
   }),
 };
 

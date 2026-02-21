@@ -1,0 +1,1 @@
+ALTER TABLE "attachment" ADD COLUMN "updated_at" timestamp DEFAULT now();
