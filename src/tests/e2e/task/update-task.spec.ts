@@ -8,6 +8,7 @@ import { makeTask } from '../../factories/make-task'
 import { db } from '../../../database/client'
 import { eq } from 'drizzle-orm'
 import { task } from '../../../database/schema'
+import { randomUUIDv7 } from 'bun'
 
 describe('Update Task', () => {
   it('should update a task', async () => {
@@ -15,7 +16,8 @@ describe('Update Task', () => {
     const project = await makeProject(userId)
     const column = await makeColumn(project.id)
     const label = await makeLabel(project.id)
-    const taskCreated = await makeTask(column.id, label.id)
+    const taskName = randomUUIDv7();
+    const taskCreated = await makeTask(column.id, taskName, label.id)
 
     const response = await app.handle(
       new Request(`http://localhost/tasks/${taskCreated.id}`, {
