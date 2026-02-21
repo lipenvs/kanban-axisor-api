@@ -151,9 +151,9 @@ Há testes **e2e** (Vitest) cobrindo as rotas da API, **exceto as de attachment*
 - **Columns**: create, update, delete, reorder
 - **Tasks**: create, update, delete, reorder
 
-**Antes de rodar os testes** é preciso ter um banco de testes e aplicar as migrations nele. As variáveis de ambiente dos testes vêm do arquivo `.env.test.local` (ex.: `DATABASE_URL` apontando para um Postgres de teste).
+**Antes de rodar os testes** é preciso ter um banco de testes e aplicar as migrations nele. As variáveis de ambiente dos testes vêm do arquivo `.env.test.local`.
 
-1. Crie `.env.test.local` com as variáveis necessárias para o ambiente de teste (pode copiar do `.env` e alterar `DATABASE_URL` para outro banco, ou usar outro Postgres/container).
+1. Copie o `.env` para `.env.test.local` e ajuste o banco de dados para o ambiente de teste: defina `POSTGRES_DB=kanban_test` e a `DATABASE_URL` apontando para esse mesmo banco (ex.: `postgresql://user:password@localhost:5432/kanban_test`). O Postgres precisa ter o banco `kanban_test` criado (ou use o mesmo container do Docker com um segundo banco).
 2. Gere o banco de testes rodando as migrations:
 
    ```bash
