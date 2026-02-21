@@ -187,11 +187,6 @@ O “antivírus” é simulado pelo **nome do arquivo**:
 
 Qualquer outro nome resulta em status **clean**.
 
-## Documentação de design (Figma)
-
-<!-- Link do Figma com processo de esboço e decisões de UI/UX -->
-**Figma (esboço e fluxos):** _[cole aqui o link do Figma]_
-
 ---
 
 ## Outros pontos
