@@ -121,7 +121,6 @@ Todo o resto (banco, Redis, armazenamento) é provisionado via **Docker**; não 
    ```bash
    bun run db:generate
    bun run db:migrate
-   bun run db:seed   # opcional
    ```
 
 5. **Rodar a API**
