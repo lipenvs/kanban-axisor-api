@@ -51,23 +51,23 @@ export const taskController = new Elysia({ prefix: "/tasks" })
     }
   )
   .patch(
-  "/reorder",
-  async ({ body, set }) => {
-    await TaskService.reorder(body.tasks);
-    set.status = 200;
-  },
-  {
-    auth: true,
-    body: ReorderTasks.body,
-    detail: {
-      operationId: "patchTasksReorder",
-      tags: ["Task"],
-      responses: {
-        200: { description: "Tasks reordered successfully" },
-      },
+    "/reorder",
+    async ({ body, set }) => {
+      await TaskService.reorder(body.tasks);
+      set.status = 200;
     },
-  }
-)
+    {
+      auth: true,
+      body: ReorderTasks.body,
+      detail: {
+        operationId: "patchTasksReorder",
+        tags: ["Task"],
+        responses: {
+          200: { description: "Tasks reordered successfully" },
+        },
+      },
+    }
+  )
   .delete(
     "/:id",
     async ({ params, set }) => {

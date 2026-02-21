@@ -73,23 +73,23 @@ export const columnController = new Elysia({ prefix: "/columns" })
     }
   )
   .patch(
-  "/reorder",
-  async ({ body, set }) => {
-    await ColumnService.reorder(body.columns);
-    set.status = 200;
-  },
-  {
-    auth: true,
-    body: ReorderColumns.body,
-    detail: {
-      operationId: "patchColumnsReorder",
-      tags: ["Column"],
-      responses: {
-        200: { description: "Columns reordered successfully" },
-      },
+    "/reorder",
+    async ({ body, set }) => {
+      await ColumnService.reorder(body.columns);
+      set.status = 200;
     },
-  }
-)
+    {
+      auth: true,
+      body: ReorderColumns.body,
+      detail: {
+        operationId: "patchColumnsReorder",
+        tags: ["Column"],
+        responses: {
+          200: { description: "Columns reordered successfully" },
+        },
+      },
+    }
+  )
   .delete(
     "/:id",
     async ({ params, set }) => {
