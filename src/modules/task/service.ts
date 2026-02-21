@@ -2,6 +2,7 @@ import { eq, asc, desc } from "drizzle-orm";
 import { db } from "../../database/client";
 import { task } from "../../database/schema/task";
 import { column } from "../../database/schema/column";
+import { AttachmentService } from "../attachment/service";
 
 export abstract class TaskService {
   static async create(data: { title: string; columnId: string; labelId?: string | null; assigneeId?: string | null; description?: string | null; dueDate?: Date | null }) {
@@ -59,6 +60,7 @@ export abstract class TaskService {
 }
 
   static async delete(id: string) {
+    await AttachmentService.deleteByTaskId(id);
     await db.delete(task).where(eq(task.id, id));
   }
 }

@@ -54,19 +54,30 @@ export abstract class AttachmentService {
   }
 
   static async delete(id: string) {
-  const attachments = await db
-    .select({ storageKey: attachment.storageKey })
-    .from(attachment)
-    .where(eq(attachment.taskId, id));
+    const found = await this.getById(id);
+    if (!found) return;
 
-  await db.delete(task).where(eq(task.id, id));
+    await db.delete(attachment).where(eq(attachment.id, id));
 
-  if (attachments.length > 0) {
+    await attachmentDeleteQueue.add("attachment-delete", {
+      storageKeys: [found.storageKey],
+    });
+  }
+
+  static async deleteByTaskId(taskId: string) {
+    const attachments = await db
+      .select({ storageKey: attachment.storageKey })
+      .from(attachment)
+      .where(eq(attachment.taskId, taskId));
+
+    if (attachments.length === 0) return;
+
+    await db.delete(attachment).where(eq(attachment.taskId, taskId));
+
     await attachmentDeleteQueue.add("attachment-delete", {
       storageKeys: attachments.map((a) => a.storageKey),
     });
   }
-}
 
   static async getPresignedUrl(id: string) {
     const [found] = await db
