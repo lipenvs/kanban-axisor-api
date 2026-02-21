@@ -48,6 +48,7 @@ const worker = new Worker<AttachmentScanJob>(
       projectId: record.projectId,
       taskId: record.taskId,
       attachmentId,
+      fileName: record.fileName,
       status,
       event: 'attachment_scanned',
     }));

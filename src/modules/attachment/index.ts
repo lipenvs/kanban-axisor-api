@@ -8,6 +8,7 @@ import {
   DownloadAttachment,
   DeleteAttachment,
 } from "./model";
+import z from "zod";
 
 export const attachmentController = new Elysia({ prefix: "/attachments" })
   .use(authPlugin)
@@ -28,7 +29,7 @@ export const attachmentController = new Elysia({ prefix: "/attachments" })
       auth: true,
       params: UploadAttachment.params,
       body: t.Object({
-        file: t.File()
+        file: t.File() // Using native Elysia TypeBox: Zod does not support File/multipart validation
       }),
       response: {
         201: UploadAttachment.response,
@@ -106,7 +107,7 @@ export const attachmentController = new Elysia({ prefix: "/attachments" })
       params: DownloadAttachment.params,
       response: {
         200: DownloadAttachment.response,
-        404: t.Object({ error: t.String() }), // Fallback for error or use Zod if we defined Error schema
+        404: z.object({ error: z.string() }),
       },
       detail: {
         operationId: "getAttachmentsDownloadById",
