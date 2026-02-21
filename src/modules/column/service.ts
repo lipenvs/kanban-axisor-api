@@ -44,6 +44,7 @@ static async getColumnsWithTasks(projectId: string) {
           columnId: task.columnId,
           labelId: task.labelId,
           assigneeId: task.assigneeId,
+          description: task.description,
           dueDate: task.dueDate,
           label: {
             name: label.name,
