@@ -142,7 +142,6 @@ Todo o resto (banco, Redis, armazenamento) é provisionado via **Docker**; não 
 | `db:generate`   | Gera migrations Drizzle             |
 | `db:migrate`    | Aplica migrations                   |
 | `db:studio`     | Drizzle Studio                      |
-| `db:seed`       | Seed do banco                       |
 
 ## Testes E2E
 
